@@ -1,5 +1,6 @@
 DROP DATABASE IF EXISTS library;
 CREATE DATABASE library;
+\set AUTOCOMMIT off
 
 BEGIN;
   \connect library
@@ -230,53 +231,253 @@ BEGIN;
 
 COMMIT;
 
+BEGIN;
+
+  CREATE OR REPLACE FUNCTION add_new_book (tit VARCHAR(100),
+                                          auth VARCHAR(100)[] DEFAULT '{}',
+                                          cat VARCHAR(100)[] DEFAULT '{}') RETURNS VOID AS $$
+    DECLARE
+      b_id INTEGER;
+      a_id INTEGER;
+      c_id INTEGER;
+      i VARCHAR(100);
+    BEGIN
+      b_id = nextval('books_book_id_seq');
+
+      INSERT INTO books(book_id, title)
+      VALUES (b_id, tit);
+
+      FOREACH i IN ARRAY auth
+      LOOP
+        a_id = (SELECT author_id FROM authors WHERE i = author_name ORDER BY 1 LIMIT 1)::INTEGER;
+
+        IF a_id IS NULL THEN
+          a_id = nextval('authors_author_id_seq');
+          INSERT INTO authors(author_id, author_name)
+          VALUES (a_id, i);
+        END IF;
+
+        INSERT INTO author_book(author_id, book_id)
+        VALUES (a_id, b_id);
+      END LOOP;
+
+      FOREACH i IN ARRAY cat
+      LOOP
+        RAISE NOTICE '(%)', i;
+        c_id = (SELECT category_id FROM categories WHERE i = category_name ORDER BY 1 LIMIT 1)::INTEGER;
+
+        IF c_id IS NULL THEN
+          c_id = nextval('categories_category_id_seq');
+          INSERT INTO categories(category_id, category_name)
+          VALUES (c_id, i);
+        END IF;
+
+        INSERT INTO book_category(book_id, category_id)
+        VALUES (b_id, c_id);
+      END LOOP;
+    END
+    $$
+    LANGUAGE plpgsql;
+
+COMMIT;
 
 
 
 BEGIN;
   \connect library
 
-  INSERT INTO authors(author_name, birth_date, death_date, address, phone_num)
+  INSERT INTO categories(category_name, above_category)
   VALUES
-    ('J.K. Rowling', '1965-07-31', NULL, NULL, NULL),
-    ('C.S. Lewis', NULL, NULL, NULL, NULL),
-    ('J.R.R. Tolkien', '1892-01-03', '1973-08-02', NULL, NULL),
-    ('Fyodor Dostoyevsky', NULL, NULL, NULL, NULL),
-    ('Henryk Sienkiewicz', NULL, NULL, NULL, NULL),
-    ('Andrzej Sapkowski', NULL, NULL, NULL, NULL),
-    ('Adam Mickiewicz', NULL, NULL, NULL, NULL),
-    ('Juliusz Słowacki', NULL, NULL, NULL, NULL),
-    ('Irena Jurgielewiczowa', NULL, NULL, NULL, NULL),
-    ('Lemony Snicket', NULL, NULL, NULL, NULL),
-    ('Thomas H. Cormen', NULL, NULL, NULL, NULL),
-    ('Charles E. Leiserson', NULL, NULL, NULL, NULL),
-    ('Ronald L. Rivest', NULL, NULL, NULL, NULL),
-    ('Clifford Stein', NULL, NULL, NULL, NULL);
+    ('Literatura piękna', NULL),
+    ('Literatura popularnonaukowa', NULL),
+    ('Literatura dziecięca', NULL),
+    ('Inne', NULL),
+      ('Biografia/autobiografia/pamiętnik', 1),
+      ('Fantastyka, fantasy, science fiction', 1),
+      ('Historyczna', 1),
+      ('Horror', 1),
+      ('Klasyka', 1),
+      ('Literatura młodzieżowa', 1),
+      ('Literatura faktu', 1),
+      ('Literatura współczesna', 1),
+      ('Poezja', 1),
+      ('Przygodowa', 1),
+      ('Publicystyka literacka i eseje', 1),
+      ('Romans', 1),
+      ('Satyra', 1),
+      ('Thriller/sensacja/kryminał', 1),
+      ('Utwór dramatyczny (dramat, komedia, tragedia)', 1),
+      ('Psychologiczna', 1),
+      ('Astronomia, astrofizyka', 2),
+      ('Biznes, finanse', 2),
+      ('Encyklopedie i słowniki', 2),
+      ('Ezoteryka, senniki, horoskopy', 2),
+      ('Filozofia i etyka', 2),
+      ('Flora i fauna', 2),
+      ('Literatura podróżnicza', 2),
+      ('Informatyka i matematyka', 2),
+      ('Historia', 2),
+      ('Językoznawstwo, nauka o literaturze', 2),
+      ('Nauki przyrodnicze (fizyka, chemia, biologia, itd.)', 2),
+      ('Nauki społeczne (psychologia, socjologia, itd.)', 2),
+      ('Popularnonaukowa', 2),
+      ('Poradniki', 2),
+      ('Poradniki dla rodziców', 2),
+      ('Technika', 2),
+      ('Interaktywne, obrazkowe, edukacyjne', 3),
+      ('Opowieści dla młodszych dzieci', 3),
+      ('Bajki', 3),
+      ('Wierszyki, piosenki', 3),
+      ('Baśnie, legendy, podania', 3),
+      ('Historie biblijne', 3),
+      ('Opowiadania i powieści', 3),
+      ('Popularnonaukowe', 3),
+      ('Pozostałe', 3),
+      ('Albumy', 4),
+      ('Czasopisma', 4),
+      ('Film/kino/telewizja', 4),
+      ('Hobby', 4),
+      ('Komiksy', 4),
+      ('Kulinaria, przepisy kulinarne', 4),
+      ('Militaria, wojskowość', 4),
+      ('Motoryzacja', 4),
+      ('Muzyka', 4),
+      ('Religia', 4),
+      ('Rękodzieło', 4),
+      ('Rozrywka', 4),
+      ('Sport', 4),
+      ('Sztuka', 4),
+      ('Teatr', 4),
+      ('Turystyka, mapy, atlasy', 4),
+      ('Zdrowie, medycyna', 4);
 
-  INSERT INTO books(title)
-  VALUES
-    ('Opowieści z Narnii: Lew, Czarownica i Stara Szafa'),
-    ('Władca Pierścieni: Dwie Wieże'),
-    ('Władca Pierścieni: Drużyna Pierścienia'),
-    ('Władca Pierścieni: Powrót Króla'),
-    ('Zbrodnia i Kara'),
-    ('W Pustyni i w Puszczy'),
-    ('Krzyżacy'),
-    ('Potop'),
-    ('Ogniem i Mieczem'),
-    ('Pan Wołodyjowski'),
-    ('Pan Tadeusz, czyli Ostatni Zajazd na Litwie'),
-    ('Ten Obcy'),
-    ('Krew Elfów'),
-    ('Wieża Jaskółki'),
-    ('Ostatnie Życzenie'),
-    ('Pani Jeziora'),
-    ('Miecz Przeznaczenia'),
-    ('Czas Pogardy'),
-    ('Chrzest Ognia'),
-    ('Sezon Burz'),
-    ('Seria Niefortunnych Zdarzeń'),
-    ('Wstęp Do Algorytmów');
+
+  SELECT add_new_book('Duma i uprzedzenie', '{Jane Austen}');
+  SELECT add_new_book('Władca Pierścieni - Drużyna Pierścienia', '{J.R.R. Tolkien}');
+  SELECT add_new_book('Władca Pierścieni - Dwie Wieże', '{J.R.R. Tolkien}');
+  SELECT add_new_book('Władca Pierścieni - Powrót Krola', '{J.R.R. Tolkien}');
+  SELECT add_new_book('Jane Eyre', '{Charlotte Bronte}');
+  SELECT add_new_book('Harry Potter i Kamień Filozoficzny', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Komnata Tajemnic', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Więzień Azkabanu', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Czara Ognia', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Zakon Feniksa', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Książe Półkrwi', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Insygnia Śmierci', '{J.K. Rowling}');
+  SELECT add_new_book('Zabić drozda', '{Harper Lee}');
+  SELECT add_new_book('Biblia');
+  SELECT add_new_book('Wichrowe Wzgórza', '{Emily Bronte}');
+  SELECT add_new_book('Rok 1984', '{George Orwell}');
+  SELECT add_new_book('Mroczne materie', '{Philip Pullman}');
+  SELECT add_new_book('Wielkie nadzieje', '{Charles Dickens}');
+  SELECT add_new_book('Małe kobietki', '{Louisa M Alcott}');
+  SELECT add_new_book('Tessa D’Urberville', '{Thomas Hardy}');
+  SELECT add_new_book('Paragraf 22', '{Joseph Heller}');
+  SELECT add_new_book('Dzieła zebrane Szekspira');
+  SELECT add_new_book('Rebeka', '{Daphne Du Maurier}');
+  SELECT add_new_book('Hobbit', '{J.R.R. Tolkien}');
+  SELECT add_new_book('Birdsong', '{Sebastian Faulks}');
+  SELECT add_new_book('Buszujący w zbożu', '{J.D. Salinger}');
+  SELECT add_new_book('Żona podróżnika w czasie', '{Audrey Niffenegger}');
+  SELECT add_new_book('Miasteczko Middlemarch', '{George Eliot}');
+  SELECT add_new_book('Przeminęło z wiatrem', '{Margaret Mitchell}');
+  SELECT add_new_book('Wielki Gatsby', '{Scott Fitzgerald}');
+  SELECT add_new_book('Samotnia', '{Charles Dickens}');
+  SELECT add_new_book('Wojna i pokój', '{Lew Tołstoj}');
+  SELECT add_new_book('Autostopem przez Galaktykę', '{Douglas Adams}');
+  SELECT add_new_book('Znowu w Brideshead', '{Evelyn Waugh}');
+  SELECT add_new_book('Zbrodnia i kara', '{Fiodor Dostojewski}');
+  SELECT add_new_book('Grona gniewu', '{John Steinbeck}');
+  SELECT add_new_book('Alicja w Krainie Czarów', '{Lewis Carroll}');
+  SELECT add_new_book('O czym szumią wierzby', '{Kenneth Grahame}');
+  SELECT add_new_book('Anna Karenina', '{Lew Tołstoj}');
+  SELECT add_new_book('David Copperfield', '{Charles Dickens}');
+  SELECT add_new_book('Opowieści z Narnii', '{C.S. Lewis}');
+  SELECT add_new_book('Emma', '{Jane Austen}');
+  SELECT add_new_book('Perswazje', '{Jane Austen}');
+  SELECT add_new_book('Chłopiec z latawcem', '{Khaled Hosseini}');
+  SELECT add_new_book('Kapitan Corelli (w innym tłumaczeniu: Mandolina kapitana Corellego)', '{Louis De Bernieres}');
+  SELECT add_new_book('Wyznania Gejszy', '{Arthur Golden}');
+  SELECT add_new_book('Kubuś Puchatek', '{A.A. Milne}');
+  SELECT add_new_book('Folwark zwierzęcy', '{George Orwell}');
+  SELECT add_new_book('Kod Da Vinci', '{Dan Brown}');
+  SELECT add_new_book('Sto lat samotności', '{Gabriel Garcia Marquez}');
+  SELECT add_new_book('Modlitwa za Owena', '{John Irving}');
+  SELECT add_new_book('Kobieta w bieli', '{Wilkie Collins}');
+  SELECT add_new_book('Ania z Zielonego Wzgórza', '{L.M. Montgomery}');
+  SELECT add_new_book('Z dala od zgiełku', '{Thomas Hardy}');
+  SELECT add_new_book('Opowieść podręcznej', '{Margaret Atwood}');
+  SELECT add_new_book('Władca much', '{William Golding}');
+  SELECT add_new_book('Pokuta', '{Ian McEwan}');
+  SELECT add_new_book('Życie Pi', '{Yann Martel}');
+  SELECT add_new_book('Diuna', '{Frank Herbert}');
+  SELECT add_new_book('Cold Comfort Farm', '{Stella Gibbons}');
+  SELECT add_new_book('Rozważna i romantyczna', '{Jane Austen}');
+  SELECT add_new_book('Pretendent do ręki', '{Vikram Seth}');
+  SELECT add_new_book('Cień wiatru', '{Carlos Ruiz Zafon}');
+  SELECT add_new_book('Opowieść o dwóch miastach', '{Charles Dickens}');
+  SELECT add_new_book('Nowy wspaniały świat', '{Aldous Huxley}');
+  SELECT add_new_book('Dziwny przypadek psa nocną porą', '{Mark Haddon}');
+  SELECT add_new_book('Miłość w czasach zarazy', '{Gabriel Garcia Marquez}');
+  SELECT add_new_book('Myszy i ludzie', '{John Steinbeck}');
+  SELECT add_new_book('Lolita', '{Vladimir Nabokov}');
+  SELECT add_new_book('Tajemna historia', '{Donna Tartt}');
+  SELECT add_new_book('Nostalgia anioła', '{Alice Sebold}');
+  SELECT add_new_book('Hrabia Monte Christo', '{Alexandre Dumas}');
+  SELECT add_new_book('W drodze', '{Jack Kerouac}');
+  SELECT add_new_book('Juda nieznany', '{Thomas Hardy}');
+  SELECT add_new_book('Dziennik Bridget Jones', '{Helen Fielding}');
+  SELECT add_new_book('Dzieci północy', '{Salman Rushdie}');
+  SELECT add_new_book('Moby Dick', '{Herman Melville}');
+  SELECT add_new_book('Oliver Twist', '{Charles Dickens}');
+  SELECT add_new_book('Dracula', '{Bram Stoker}');
+  SELECT add_new_book('Tajemniczy ogród', '{Frances Hodgson Burnett}');
+  SELECT add_new_book('Zapiski z małej wyspy', '{Bill Bryson}');
+  SELECT add_new_book('Ulisses', '{James Joyce}');
+  SELECT add_new_book('Szklany klosz', '{Sylvia Plath}');
+  SELECT add_new_book('Jaskółki i Amazonki', '{Arthur Ransome}');
+  SELECT add_new_book('Germinal', '{Emile Zola}');
+  SELECT add_new_book('Targowisko próżności', '{William Makepeace Thackeray}');
+  SELECT add_new_book('Opętanie', '{A.S. Byatt}');
+  SELECT add_new_book('Opowieść wigilijna', '{Charles Dickens}');
+  SELECT add_new_book('Atlas chmur', '{David Mitchell}');
+  SELECT add_new_book('Kolor purpury', '{Alice Walker}');
+  SELECT add_new_book('Okruchy dnia', '{Kazuo Ishiguro}');
+  SELECT add_new_book('Pani Bovary', '{Gustave Flaubert}');
+  SELECT add_new_book('A Fine Balance', '{Rohinton Mistry}');
+  SELECT add_new_book('Pajęczyna Szarloty', '{E.B. White}');
+  SELECT add_new_book('Pięć osób, które spotykamy w niebie', '{Mitch Albom}');
+  SELECT add_new_book('Przygody Sherlocka Holmesa', '{Sir Arthur Conan Doyle}');
+  SELECT add_new_book('The Faraway Tree Collection', '{Enid Blyton}');
+  SELECT add_new_book('Jądro ciemności', '{Joseph Conrad}');
+  SELECT add_new_book('Mały Książę', '{Antoine De Saint-Exupery}');
+  SELECT add_new_book('Fabryka os', '{Iain Banks}');
+  SELECT add_new_book('Wodnikowe Wzgórze', '{Richard Adams}');
+  SELECT add_new_book('Sprzysiężenie głupców', '{John Kennedy Toole}');
+  SELECT add_new_book('Miasteczko jak Alece Springs', '{Nevil Shute}');
+  SELECT add_new_book('Trzej muszkieterowie', '{Alexandre Dumas}');
+  SELECT add_new_book('Hamlet', '{William Shakespeare}');
+  SELECT add_new_book('Charlie i fabryka czekolady', '{Roald Dahl}');
+  SELECT add_new_book('Nędznicy', '{Victor Hugo}');
+  SELECT add_new_book('W pustyni i w puszczy', '{Henryk Sienkiewicz}');
+  SELECT add_new_book('Krzyżacy', '{Henryk Sienkiewicz}');
+  SELECT add_new_book('Potop', '{Henryk Sienkiewicz}');
+  SELECT add_new_book('Ogniem i mieczem', '{Henryk Sienkiewicz}');
+  SELECT add_new_book('Pan Wołodyjowski', '{Henryk Sienkiewicz}');
+  SELECT add_new_book('Pan Tadeusz, czyli ostatni zajazd na Litwie', '{Adam Mickiewicz}');
+  SELECT add_new_book('Ten obcy', '{Irena Jurgielewiczowa}');
+  SELECT add_new_book('Krew elfów', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Wieża jaskółki', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Ostatnie życzenie', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Pani jeziora', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Miecz przeznaczenia', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Czas pogardy', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Chrzest ognia', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Sezon burz', '{Andrzej Sapkowski}');
+  SELECT add_new_book('Seria niefortunnych zdarzeń', '{Lemony Snicket}');
+  SELECT add_new_book('Wprowadzenie do algorytmów', '{Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein}');
+
+
 
   INSERT INTO branches(branch_name, address, phone_num)
   VALUES
@@ -300,124 +501,6 @@ BEGIN;
     ('Bieńczyce', 'Osiedle Kalinowe 14, 31-812 Kraków', '12 641 4562'),
     ('Wzgórza Krzesławickie', 'Osiedle Na Stoku 5, 31-703 Kraków', '012 645 3002'),
     ('Nowa Huta', 'Osiedle Centrum B 2, 31-927 Kraków', '12 644 7840');
-
-  INSERT INTO author_book(author_id, book_id)
-  VALUES
-    (2,1),
-    (3,2),
-    (3,3),
-    (3,4),
-    (4,5),
-    (5,6),
-    (5,7),
-    (5,8),
-    (5,9),
-    (6,13),
-    (6,14),
-    (6,15),
-    (6,16),
-    (6,17),
-    (6,18),
-    (6,19),
-    (6,20),
-    (10,21),
-    (7,11),
-    (9,12),
-    (11,22),
-    (12,22),
-    (13,22),
-    (14,22);
-
-
-  INSERT INTO categories(category_name, above_category)
-  VALUES
-    ('Literatura piękna', NULL),
-    ('Literatura popularnonaukowa', NULL),
-    ('Literatura dziecięca', NULL),
-    ('Inne', NULL),
-      ('biografia/autobiografia/pamiętnik', 1),
-      ('fantastyka, fantasy, science fiction', 1),
-      ('historyczna', 1),
-      ('horror', 1),
-      ('klasyka', 1),
-      ('literatura młodzieżowa', 1),
-      ('literatura faktu', 1),
-      ('literatura współczesna', 1),
-      ('poezja', 1),
-      ('przygodowa', 1),
-      ('publicystyka literacka i eseje', 1),
-      ('romans', 1),
-      ('satyra', 1),
-      ('thriller/sensacja/kryminał', 1),
-      ('utwór dramatyczny (dramat, komedia, tragedia)', 1),
-      ('psychologiczna', 1),
-      ('astronomia, astrofizyka', 2),
-      ('biznes, finanse', 2),
-      ('encyklopedie i słowniki', 2),
-      ('ezoteryka, senniki, horoskopy', 2),
-      ('filozofia i etyka', 2),
-      ('flora i fauna', 2),
-      ('literatura podróżnicza', 2),
-      ('informatyka i matematyka', 2),
-      ('historia', 2),
-      ('językoznawstwo, nauka o literaturze', 2),
-      ('nauki przyrodnicze (fizyka, chemia, biologia, itd.)', 2),
-      ('nauki społeczne (psychologia, socjologia, itd.)', 2),
-      ('popularnonaukowa', 2),
-      ('poradniki', 2),
-      ('poradniki dla rodziców', 2),
-      ('technika', 2),
-      ('interaktywne, obrazkowe, edukacyjne', 3),
-      ('opowieści dla młodszych dzieci', 3),
-      ('bajki', 3),
-      ('wierszyki, piosenki', 3),
-      ('baśnie, legendy, podania', 3),
-      ('historie biblijne', 3),
-      ('opowiadania i powieści', 3),
-      ('popularnonaukowe', 3),
-      ('pozostałe', 3),
-      ('albumy', 4),
-      ('czasopisma', 4),
-      ('film/kino/telewizja', 4),
-      ('hobby', 4),
-      ('komiksy', 4),
-      ('kulinaria, przepisy kulinarne', 4),
-      ('militaria, wojskowość', 4),
-      ('motoryzacja', 4),
-      ('muzyka', 4),
-      ('religia', 4),
-      ('rękodzieło', 4),
-      ('rozrywka', 4),
-      ('sport', 4),
-      ('sztuka', 4),
-      ('teatr', 4),
-      ('turystyka, mapy, atlasy', 4),
-      ('zdrowie, medycyna', 4);
-
-  INSERT INTO book_category(book_id, category_id)
-  VALUES
-    (1,6), (1,14),
-    (2,6), (2,14),
-    (3,6), (3,14),
-    (4,6), (4,14),
-    (5,10), (5,14),
-    (6,7), (6,14),
-    (7,7), (7,9), (7,14),
-    (8,7), (8,9), (8,14),
-    (9,7), (9,9), (9,14),
-    (10,7), (10,9), (10,14),
-    (11,7), (11,9), (11,16),
-    (12,10), (12,14), (12,16),
-    (13,6), (13,12), (13,14), (13,16),
-    (14,6), (14,12), (14,14), (14,16),
-    (15,6), (15,12), (15,14), (15,16),
-    (16,6), (16,12), (16,14), (16,16),
-    (17,6), (17,12), (17,14), (17,16),
-    (18,6), (18,12), (18,14), (18,16),
-    (19,6), (19,12), (19,14), (19,16),
-    (20,6), (20,12), (20,14), (20,16),
-    (21,10), (21,14),
-    (22, 28);
 
   INSERT INTO publishers(publisher_name, creation_date, address, phone_num)
   VALUES
