@@ -1,6 +1,5 @@
 DROP DATABASE IF EXISTS library;
 CREATE DATABASE library;
-\set AUTOCOMMIT off
 
 BEGIN;
   \connect library
@@ -11,8 +10,6 @@ BEGIN;
     author_name  varchar(100)  NOT NULL,
     birth_date   date,
     death_date   date,
-    address      varchar(100),
-    phone_num    varchar(100),
     
     CONSTRAINT pk_authors
       PRIMARY KEY (author_id)
@@ -38,8 +35,8 @@ BEGIN;
   CREATE TABLE branches
   (
     branch_id    serial        NOT NULL,
-    branch_name  varchar(100)  NOT NULL,
-    address      varchar(100)  NOT NULL,
+    branch_name  varchar(100)  NOT NULL UNIQUE,
+    address      varchar(100)  NOT NULL UNIQUE,
     phone_num    varchar(20),
     
     CONSTRAINT pk_branches
@@ -68,10 +65,10 @@ BEGIN;
   (
     client_id        serial        NOT NULL,
     client_name      varchar(100)  NOT NULL,
-    document_number  varchar(50)   NOT NULL,
+    document_number  varchar(50)   NOT NULL  UNIQUE,
     address          varchar(100)  NOT NULL,
     phone_num        varchar(50),
-    signin_date      date          NOT NULL  DEFAULT current_date,
+    signin_date      date                    DEFAULT current_date,
     
     CONSTRAINT pk_clients
       PRIMARY KEY (client_id)
@@ -82,7 +79,7 @@ BEGIN;
   CREATE TABLE publishers
   (
     publisher_id    serial        NOT NULL,
-    publisher_name  varchar(100)  NOT NULL,
+    publisher_name  varchar(100)  NOT NULL UNIQUE,
     creation_date   date,
     address         varchar(100),
     phone_num       varchar(100),
@@ -134,9 +131,9 @@ BEGIN;
   CREATE TABLE editions
   (
     edition_id     serial        NOT NULL,
-    isbn           varchar(15)   NOT NULL,
+    isbn           varchar(15)   NOT NULL UNIQUE,
     edition_name   varchar(100),
-    language  varchar(20)   NOT NULL  DEFAULT 'polish',
+    language       varchar(20)   NOT NULL  DEFAULT 'polish',
     release_date   date,
     book_id        integer       NOT NULL,
     publisher_id   integer,
@@ -157,9 +154,10 @@ BEGIN;
 
   CREATE TABLE ratings
   (
-    client_id  integer  NOT NULL,
-    book_id    integer  NOT NULL,
-    rating     integer  NOT NULL,
+    client_id    integer  NOT NULL,
+    book_id      integer  NOT NULL,
+    rating       integer  NOT NULL,
+    rating_date  date     NOT NULL  DEFAULT current_date
 
     CONSTRAINT pk_ratings
       PRIMARY KEY (client_id, book_id),
@@ -179,7 +177,7 @@ BEGIN;
   (
     specimen_id  serial       NOT NULL,
     edition_id   integer      NOT NULL,
-    branch_id    integer,
+    branch_id    integer      NOT NULL,
     cover_type   varchar(10),
     
     CONSTRAINT pk_specimens
