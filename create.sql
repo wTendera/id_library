@@ -12,12 +12,11 @@ BEGIN;
     death_date   date,
     
     CONSTRAINT pk_authors
-      PRIMARY KEY (author_id)
-  );
+      PRIMARY KEY (author_id),
 
-  ALTER TABLE authors
-    ADD CONSTRAINT ck_0
-      CHECK (death_date>birth_date);
+    CONSTRAINT ck_authors
+      CHECK (death_date>birth_date)
+  );
 
 
 
@@ -71,7 +70,10 @@ BEGIN;
     signin_date      date                    DEFAULT current_date,
     
     CONSTRAINT pk_clients
-      PRIMARY KEY (client_id)
+      PRIMARY KEY (client_id),
+
+    CONSTRAINT ck_clients
+      CHECK (signin_date IS NULL OR signin_date<=current_date)
   );
 
 
@@ -85,7 +87,11 @@ BEGIN;
     phone_num       varchar(100),
     
     CONSTRAINT pk_publishers
-      PRIMARY KEY (publisher_id)
+      PRIMARY KEY (publisher_id),
+
+    CONSTRAINT ck_publishers
+      CHECK (creation_date IS NULL OR creation_date<=current_date)
+
   );
 
 
@@ -131,9 +137,8 @@ BEGIN;
   CREATE TABLE editions
   (
     edition_id     serial        NOT NULL,
-    isbn           varchar(15)   NOT NULL UNIQUE,
+    isbn           numeric(13)   NOT NULL UNIQUE,
     edition_name   varchar(100),
-    language       varchar(20)   NOT NULL  DEFAULT 'polish',
     release_date   date,
     book_id        integer       NOT NULL,
     publisher_id   integer,
@@ -147,7 +152,10 @@ BEGIN;
 
     CONSTRAINT fk_editions_publishers
       FOREIGN KEY (publisher_id)
-        REFERENCES publishers
+        REFERENCES publishers,
+
+    CONSTRAINT ck_editions
+      CHECK (release_date IS NULL OR release_date<=current_date)
   );
 
 
@@ -157,7 +165,7 @@ BEGIN;
     client_id    integer  NOT NULL,
     book_id      integer  NOT NULL,
     rating       integer  NOT NULL,
-    rating_date  date     NOT NULL  DEFAULT current_date
+    rating_date  date     NOT NULL  DEFAULT current_date,
 
     CONSTRAINT pk_ratings
       PRIMARY KEY (client_id, book_id),
@@ -168,7 +176,13 @@ BEGIN;
 
     CONSTRAINT fk_ratings_clients
       FOREIGN KEY (client_id)
-        REFERENCES clients
+        REFERENCES clients,
+
+    CONSTRAINT ck_ratings_0
+      CHECK (rating BETWEEN 1 AND 10),
+
+    CONSTRAINT ck_ratings_1
+      CHECK (rating_date IS NULL OR rating_date<=current_date)
   );
 
 
@@ -178,7 +192,7 @@ BEGIN;
     specimen_id  serial       NOT NULL,
     edition_id   integer      NOT NULL,
     branch_id    integer      NOT NULL,
-    cover_type   varchar(10),
+    cover_type   char(4),
     
     CONSTRAINT pk_specimens
       PRIMARY KEY (specimen_id),
@@ -189,12 +203,11 @@ BEGIN;
 
     CONSTRAINT fk_specimens_branches
       FOREIGN KEY (branch_id)
-        REFERENCES branches
-  );
+        REFERENCES branches,
 
-  ALTER TABLE specimens
-    ADD CONSTRAINT ck_3
-      CHECK (cover_type = 'hard' OR cover_type = 'soft');
+    CONSTRAINT ck_specimens
+      CHECK (cover_type = 'hard' OR cover_type = 'soft')
+  );
 
 
 
@@ -216,16 +229,14 @@ BEGIN;
 
     CONSTRAINT fk_borrows_clients
       FOREIGN KEY (client_id)
-        REFERENCES clients
+        REFERENCES clients,
+
+    CONSTRAINT ck_borrows_0
+      CHECK (borrow_date < return_final_date AND borrow_date<=current_date),
+
+    CONSTRAINT ck_borrows_1
+      CHECK (return_date IS NULL OR (return_date<=current_date AND borrow_date < return_date))
   );
-
-  ALTER TABLE borrows
-    ADD CONSTRAINT ck_1
-      CHECK (borrow_date < return_final_date);
-
-  ALTER TABLE borrows
-    ADD CONSTRAINT ck_2
-      CHECK ((borrow_date < return_date) OR return_date IS NULL);
 
 COMMIT;
 
