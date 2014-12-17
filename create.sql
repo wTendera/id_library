@@ -51,7 +51,7 @@ BEGIN;
   CREATE TABLE categories
   (
     category_id     serial        NOT NULL,
-    category_name   varchar(100)  NOT NULL,
+    category_name   varchar(100)  NOT NULL  UNIQUE,
     above_category  integer,
     
     CONSTRAINT pk_categories
@@ -279,6 +279,32 @@ BEGIN;
     $$
     LANGUAGE plpgsql;
 
+  CREATE OR REPLACE FUNCTION add_new_category (cat VARCHAR(100),
+                                              above VARCHAR(100) DEFAULT NULL) RETURNS VOID AS $$
+    DECLARE
+      a_id INTEGER;
+
+    BEGIN
+
+      a_id = NULL;
+
+      IF above IS NOT NULL THEN
+        a_id = (SELECT category_id FROM categories WHERE above = category_name ORDER BY 1 LIMIT 1)::INTEGER;
+        
+        IF a_id IS NULL THEN
+          a_id = nextval('categories_category_id_seq');
+          INSERT INTO categories (category_id, category_name)
+          VALUES (a_id, above);
+        END IF;
+      END IF;
+
+      INSERT INTO categories(category_name, above_category)
+      VALUES (cat, a_id);
+
+    END
+    $$
+    LANGUAGE plpgsql;
+
 COMMIT;
 
 
@@ -286,70 +312,65 @@ COMMIT;
 BEGIN;
   \connect library
 
-  INSERT INTO categories(category_name, above_category)
-  VALUES
-    ('Literatura piękna', NULL),
-    ('Literatura popularnonaukowa', NULL),
-    ('Literatura dziecięca', NULL),
-    ('Inne', NULL),
-      ('Biografia/autobiografia/pamiętnik', 1),
-      ('Fantastyka, fantasy, science fiction', 1),
-      ('Historyczna', 1),
-      ('Horror', 1),
-      ('Klasyka', 1),
-      ('Literatura młodzieżowa', 1),
-      ('Literatura faktu', 1),
-      ('Literatura współczesna', 1),
-      ('Poezja', 1),
-      ('Przygodowa', 1),
-      ('Publicystyka literacka i eseje', 1),
-      ('Romans', 1),
-      ('Satyra', 1),
-      ('Thriller/sensacja/kryminał', 1),
-      ('Utwór dramatyczny (dramat, komedia, tragedia)', 1),
-      ('Psychologiczna', 1),
-      ('Astronomia, astrofizyka', 2),
-      ('Biznes, finanse', 2),
-      ('Encyklopedie i słowniki', 2),
-      ('Ezoteryka, senniki, horoskopy', 2),
-      ('Filozofia i etyka', 2),
-      ('Flora i fauna', 2),
-      ('Literatura podróżnicza', 2),
-      ('Informatyka i matematyka', 2),
-      ('Historia', 2),
-      ('Językoznawstwo, nauka o literaturze', 2),
-      ('Nauki przyrodnicze (fizyka, chemia, biologia, itd.)', 2),
-      ('Nauki społeczne (psychologia, socjologia, itd.)', 2),
-      ('Popularnonaukowa', 2),
-      ('Poradniki', 2),
-      ('Poradniki dla rodziców', 2),
-      ('Technika', 2),
-      ('Interaktywne, obrazkowe, edukacyjne', 3),
-      ('Opowieści dla młodszych dzieci', 3),
-      ('Bajki', 3),
-      ('Wierszyki, piosenki', 3),
-      ('Baśnie, legendy, podania', 3),
-      ('Historie biblijne', 3),
-      ('Opowiadania i powieści', 3),
-      ('Popularnonaukowe', 3),
-      ('Pozostałe', 3),
-      ('Albumy', 4),
-      ('Czasopisma', 4),
-      ('Film/kino/telewizja', 4),
-      ('Hobby', 4),
-      ('Komiksy', 4),
-      ('Kulinaria, przepisy kulinarne', 4),
-      ('Militaria, wojskowość', 4),
-      ('Motoryzacja', 4),
-      ('Muzyka', 4),
-      ('Religia', 4),
-      ('Rękodzieło', 4),
-      ('Rozrywka', 4),
-      ('Sport', 4),
-      ('Sztuka', 4),
-      ('Teatr', 4),
-      ('Turystyka, mapy, atlasy', 4),
-      ('Zdrowie, medycyna', 4);
+  SELECT add_new_category('Biografia/autobiografia/pamiętnik', 'Literatura piękna');
+  SELECT add_new_category('Fantastyka, fantasy, science fiction', 'Literatura piękna');
+  SELECT add_new_category('Historyczna', 'Literatura piękna');
+  SELECT add_new_category('Horror', 'Literatura piękna');
+  SELECT add_new_category('Klasyka', 'Literatura piękna');
+  SELECT add_new_category('Literatura młodzieżowa', 'Literatura piękna');
+  SELECT add_new_category('Literatura faktu', 'Literatura piękna');
+  SELECT add_new_category('Literatura współczesna', 'Literatura piękna');
+  SELECT add_new_category('Poezja', 'Literatura piękna');
+  SELECT add_new_category('Przygodowa', 'Literatura piękna');
+  SELECT add_new_category('Publicystyka literacka i eseje', 'Literatura piękna');
+  SELECT add_new_category('Romans', 'Literatura piękna');
+  SELECT add_new_category('Satyra', 'Literatura piękna');
+  SELECT add_new_category('Thriller/sensacja/kryminał', 'Literatura piękna');
+  SELECT add_new_category('Utwór dramatyczny (dramat, komedia, tragedia)', 'Literatura piękna');
+  SELECT add_new_category('Psychologiczna', 'Literatura piękna');
+  SELECT add_new_category('Astronomia, astrofizyka', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Biznes, finanse', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Encyklopedie i słowniki', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Ezoteryka, senniki, horoskopy', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Filozofia i etyka', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Flora i fauna', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Literatura podróżnicza', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Informatyka i matematyka', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Historia', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Językoznawstwo, nauka o literaturze', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Nauki przyrodnicze (fizyka, chemia, biologia, itd.)', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Nauki społeczne (psychologia, socjologia, itd.)', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Popularnonaukowa', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Poradniki', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Poradniki dla rodziców', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Technika', 'Literatura popularnonaukowa');
+  SELECT add_new_category('Interaktywne, obrazkowe, edukacyjne', 'Literatura dziecięca');
+  SELECT add_new_category('Opowieści dla młodszych dzieci', 'Literatura dziecięca');
+  SELECT add_new_category('Bajki', 'Literatura dziecięca');
+  SELECT add_new_category('Wierszyki, piosenki', 'Literatura dziecięca');
+  SELECT add_new_category('Baśnie, legendy, podania', 'Literatura dziecięca');
+  SELECT add_new_category('Historie biblijne', 'Literatura dziecięca');
+  SELECT add_new_category('Opowiadania i powieści', 'Literatura dziecięca');
+  SELECT add_new_category('Popularnonaukowe', 'Literatura dziecięca');
+  SELECT add_new_category('Pozostałe', 'Literatura dziecięca');
+  SELECT add_new_category('Albumy', 'Inne');
+  SELECT add_new_category('Czasopisma', 'Inne');
+  SELECT add_new_category('Film/kino/telewizja', 'Inne');
+  SELECT add_new_category('Hobby', 'Inne');
+  SELECT add_new_category('Komiksy', 'Inne');
+  SELECT add_new_category('Kulinaria, przepisy kulinarne', 'Inne');
+  SELECT add_new_category('Militaria, wojskowość', 'Inne');
+  SELECT add_new_category('Motoryzacja', 'Inne');
+  SELECT add_new_category('Muzyka', 'Inne');
+  SELECT add_new_category('Religia', 'Inne');
+  SELECT add_new_category('Rękodzieło', 'Inne');
+  SELECT add_new_category('Rozrywka', 'Inne');
+  SELECT add_new_category('Sport', 'Inne');
+  SELECT add_new_category('Sztuka', 'Inne');
+  SELECT add_new_category('Teatr', 'Inne');
+  SELECT add_new_category('Turystyka, mapy, atlasy', 'Inne');
+  SELECT add_new_category('Zdrowie, medycyna', 'Inne');
+
 
 
   SELECT add_new_book('Duma i uprzedzenie', '{Jane Austen}');
