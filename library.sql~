@@ -1,14 +1,14 @@
 CREATE DATABASE library;
 \connect library
 
-CREATE TABLE author ( 
-	id                   serial  NOT NULL,
+CREATE TABLE authors ( 
+	author_id                   serial  NOT NULL,
 	author_name          varchar(100)  NOT NULL,
 	birth_date           date  ,
 	death_date           date  ,
 	phone_num            varchar(100)  ,
 	address              varchar(100)  ,
-	CONSTRAINT pk_author PRIMARY KEY ( id )
+	CONSTRAINT pk_author PRIMARY KEY ( author_id )
  );
 
 ALTER TABLE author ADD CONSTRAINT ck_0 CHECK ( death_date > birth_date );
@@ -185,5 +185,9 @@ VALUES	(2,1),
 	(13,22),
 	(14,22);
 
-select title from author join author_book on (id = author_id) join book on (book_id = book.id) where author_name like('%Sapkowski');
+INSERT INTO book_categories(book_id, category_id)
+VALUES	(2,1),
+
+
+INSERT INTO category(category)
 
