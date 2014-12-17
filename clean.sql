@@ -1,4 +1,4 @@
-\connect biblioteka
+\connect library
 drop table if exists author cascade;
 drop table if exists book cascade;
 drop table if exists branch cascade;

@@ -1,5 +1,5 @@
-CREATE DATABASE biblioteka;
-\connect biblioteka
+CREATE DATABASE library;
+\connect library
 
 CREATE TABLE author ( 
 	id                   serial  NOT NULL,
