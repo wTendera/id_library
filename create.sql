@@ -263,7 +263,6 @@ BEGIN;
 
       FOREACH i IN ARRAY cat
       LOOP
-        RAISE NOTICE '(%)', i;
         c_id = (SELECT category_id FROM categories WHERE i = category_name ORDER BY 1 LIMIT 1)::INTEGER;
 
         IF c_id IS NULL THEN
@@ -374,17 +373,17 @@ BEGIN;
 
 
   SELECT add_new_book('Duma i uprzedzenie', '{Jane Austen}');
-  SELECT add_new_book('Władca Pierścieni - Drużyna Pierścienia', '{J.R.R. Tolkien}');
-  SELECT add_new_book('Władca Pierścieni - Dwie Wieże', '{J.R.R. Tolkien}');
-  SELECT add_new_book('Władca Pierścieni - Powrót Krola', '{J.R.R. Tolkien}');
+  SELECT add_new_book('Władca Pierścieni - Drużyna Pierścienia', '{J.R.R. Tolkien}', '{"Fantastyka, fantasy, science fiction"}');
+  SELECT add_new_book('Władca Pierścieni - Dwie Wieże', '{J.R.R. Tolkien}', '{"Fantastyka, fantasy, science fiction"}');
+  SELECT add_new_book('Władca Pierścieni - Powrót Krola', '{J.R.R. Tolkien}', '{"Fantastyka, fantasy, science fiction"}');
   SELECT add_new_book('Jane Eyre', '{Charlotte Bronte}');
-  SELECT add_new_book('Harry Potter i Kamień Filozoficzny', '{J.K. Rowling}');
-  SELECT add_new_book('Harry Potter i Komnata Tajemnic', '{J.K. Rowling}');
-  SELECT add_new_book('Harry Potter i Więzień Azkabanu', '{J.K. Rowling}');
-  SELECT add_new_book('Harry Potter i Czara Ognia', '{J.K. Rowling}');
-  SELECT add_new_book('Harry Potter i Zakon Feniksa', '{J.K. Rowling}');
-  SELECT add_new_book('Harry Potter i Książe Półkrwi', '{J.K. Rowling}');
-  SELECT add_new_book('Harry Potter i Insygnia Śmierci', '{J.K. Rowling}');
+  SELECT add_new_book('Harry Potter i Kamień Filozoficzny', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
+  SELECT add_new_book('Harry Potter i Komnata Tajemnic', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
+  SELECT add_new_book('Harry Potter i Więzień Azkabanu', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
+  SELECT add_new_book('Harry Potter i Czara Ognia', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
+  SELECT add_new_book('Harry Potter i Zakon Feniksa', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
+  SELECT add_new_book('Harry Potter i Książe Półkrwi', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
+  SELECT add_new_book('Harry Potter i Insygnia Śmierci', '{J.K. Rowling}', '{"Fantastyka, fantasy, science fiction", Literatura współczesna}');
   SELECT add_new_book('Zabić drozda', '{Harper Lee}');
   SELECT add_new_book('Biblia');
   SELECT add_new_book('Wichrowe Wzgórza', '{Emily Bronte}');
@@ -496,7 +495,7 @@ BEGIN;
   SELECT add_new_book('Chrzest ognia', '{Andrzej Sapkowski}');
   SELECT add_new_book('Sezon burz', '{Andrzej Sapkowski}');
   SELECT add_new_book('Seria niefortunnych zdarzeń', '{Lemony Snicket}');
-  SELECT add_new_book('Wprowadzenie do algorytmów', '{Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein}');
+  SELECT add_new_book('Wprowadzenie do algorytmów', '{Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein}', '{Informatyka i matematyka}');
 
 
 
