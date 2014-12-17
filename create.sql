@@ -10,9 +10,9 @@ BEGIN;
     author_name  varchar(100)  NOT NULL,
     birth_date   date,
     death_date   date,
-    phone_num    varchar(100),
     address      varchar(100),
-
+    phone_num    varchar(100),
+    
     CONSTRAINT pk_authors
       PRIMARY KEY (author_id)
   );
@@ -67,8 +67,8 @@ BEGIN;
   (
     client_id        serial        NOT NULL,
     client_name      varchar(100)  NOT NULL,
-    address          varchar(100)  NOT NULL,
     document_number  varchar(50)   NOT NULL,
+    address          varchar(100)  NOT NULL,
     phone_num        varchar(50),
     signin_date      date          NOT NULL  DEFAULT current_date,
     
@@ -82,9 +82,9 @@ BEGIN;
   (
     publisher_id    serial        NOT NULL,
     publisher_name  varchar(100)  NOT NULL,
-    phone_num       varchar(100),
     creation_date   date,
     address         varchar(100),
+    phone_num       varchar(100),
     
     CONSTRAINT pk_publishers
       PRIMARY KEY (publisher_id)
@@ -133,12 +133,12 @@ BEGIN;
   CREATE TABLE editions
   (
     edition_id     serial        NOT NULL,
+    isbn           varchar(15)   NOT NULL,
+    edition_name   varchar(100),
+    language  varchar(20)   NOT NULL  DEFAULT 'polish',
+    release_date   date,
     book_id        integer       NOT NULL,
     publisher_id   integer,
-    edition_name   varchar(100),
-    release_date   date,
-    isbn           varchar(15)   NOT NULL,
-    book_language  varchar(20)   NOT NULL  DEFAULT 'polish',
     
     CONSTRAINT pk_editions
       PRIMARY KEY (edition_id),
@@ -178,8 +178,8 @@ BEGIN;
   (
     specimen_id  serial       NOT NULL,
     edition_id   integer      NOT NULL,
-    cover_type   varchar(10),
     branch_id    integer,
+    cover_type   varchar(10),
     
     CONSTRAINT pk_specimens
       PRIMARY KEY (specimen_id),
@@ -236,7 +236,7 @@ COMMIT;
 BEGIN;
   \connect library
 
-  INSERT INTO authors(author_name, birth_date, death_date, phone_num, address)
+  INSERT INTO authors(author_name, birth_date, death_date, address, phone_num)
   VALUES
     ('J.K. Rowling', '1965-07-31', NULL, NULL, NULL),
     ('C.S. Lewis', NULL, NULL, NULL, NULL),
@@ -418,5 +418,60 @@ BEGIN;
     (20,6), (20,12), (20,14), (20,16),
     (21,10), (21,14),
     (22, 28);
+
+  INSERT INTO publishers(publisher_name, creation_date, address, phone_num)
+  VALUES
+    ('Apostolicum', NULL, NULL, NULL),
+    ('BIBLOS', NULL, NULL, NULL),
+    ('BookRage', NULL, NULL, NULL),
+    ('Centrum Badań i Innowacji Pro-Akademia', NULL, NULL, NULL),
+    ('Correspondance des Arts', NULL, NULL, NULL),
+    ('Czytelnia dla wszystkich', NULL, NULL, NULL),
+    ('Eduintegrator', NULL, NULL, NULL),
+    ('ELAY', NULL, NULL, NULL),
+    ('Fundacja Instytut Wydawniczy „Książka i Prasa”', NULL, NULL, NULL),
+    ('Fundacja Nasza Przyszłość', NULL, NULL, NULL),
+    ('Gdański Klub Fantastyki', NULL, NULL, NULL),
+    ('Grupa kapitałowa PWN', NULL, NULL, NULL),
+    ('Hanami', NULL, NULL, NULL),
+    ('Hejnał', NULL, NULL, NULL),
+    ('Grupa Wydawnicza Helion', NULL, NULL, NULL),
+    ('Instytut Wydawniczy Agape', NULL, NULL, NULL),
+    ('Instytut Wydawniczy SIMP', NULL, NULL, NULL),
+    ('Jacek Music', NULL, NULL, NULL),
+    ('Japonica Polonica Fantastica', NULL, NULL, NULL),
+    ('Książnica-Atlas', NULL, NULL, NULL),
+    ('Księgarnia św. Jacka', NULL, NULL, NULL),
+    ('Lupus', NULL, NULL, NULL),
+    ('Marpress', NULL, NULL, NULL),
+    ('Wydawnictwo Michalineum', NULL, NULL, NULL),
+    ('Niezależna Oficyna Wydawnicza', NULL, NULL, NULL),
+    ('Noir sur Blanc', NULL, NULL, NULL),
+    ('Officyna Liberałów', NULL, NULL, NULL),
+    ('Oficyna Monos', NULL, NULL, NULL),
+    ('Polskie Towarzystwo Astronomiczne', NULL, NULL, NULL),
+    ('Polskie Wydawnictwo Encyklopedyczne', NULL, NULL, NULL),
+    ('Rewasz', NULL, NULL, NULL),
+    ('Wydawnictwo Solaris', NULL, NULL, NULL),
+    ('Słowo Prawdy', NULL, NULL, NULL),
+    ('Sport i Turystyka', NULL, NULL, NULL),
+    ('Superpress', NULL, NULL, NULL),
+    ('Tajne Wojskowe Zakłady Wydawnicze', NULL, NULL, NULL),
+    ('TM-Semic', NULL, NULL, NULL),
+    ('Wydawnictwo Altenberga', NULL, NULL, NULL),
+    ('Wydawnictwo Armoryka', NULL, NULL, NULL),
+    ('Wydawnictwo Czarne', NULL, NULL, NULL),
+    ('Wydawnictwo Czerwone i Czarne', NULL, NULL, NULL),
+    ('Wydawnictwo im. Konstytucji 3 Maja', NULL, NULL, NULL),
+    ('Wydawnictwo Kirin', NULL, NULL, NULL),
+    ('Wydawnictwo Muzyczne GAMMA', NULL, NULL, NULL),
+    ('Wydawnictwo Pedagogiczne Operon', NULL, NULL, NULL),
+    ('Wydawnictwo Piotra Marciszuka Stentor', NULL, NULL, NULL),
+    ('Wydawnictwo Politechniki Śląskiej', NULL, NULL, NULL),
+    ('Wydawnictwo Replika', NULL, NULL, NULL),
+    ('Wydawnictwo WARTO', NULL, NULL, NULL),
+    ('Wydawnictwo Zwiastun', NULL, NULL, NULL),
+    ('Zakład Piller-Neumanna', NULL, NULL, NULL),
+    ('Wydawnictwo „Znaki Czasu”', NULL, NULL, NULL);
 
 COMMIT;
