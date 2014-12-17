@@ -184,3 +184,6 @@ VALUES	(2,1),
 	(12,22),
 	(13,22),
 	(14,22);
+
+select title from author join author_book on (id = author_id) join book on (book_id = book.id) where author_name like('%Sapkowski');
+
