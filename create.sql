@@ -1,13 +1,8 @@
-BEGIN;
+DROP DATABASE IF EXISTS library;
+CREATE DATABASE library;
 
-  CREATE DATABASE library;
+BEGIN;
   \connect library
-
-COMMIT;
-
-
-
-BEGIN;
 
   CREATE TABLE authors
   (
@@ -41,7 +36,7 @@ BEGIN;
 
   CREATE TABLE branches
   (
-    branch_id    integer       NOT NULL,
+    branch_id    serial        NOT NULL,
     branch_name  varchar(100)  NOT NULL,
     address      varchar(100)  NOT NULL,
     phone_num    varchar(20),
@@ -239,6 +234,24 @@ COMMIT;
 
 
 BEGIN;
+  \connect library
+
+  INSERT INTO authors(author_name, birth_date, death_date, phone_num, address)
+  VALUES
+    ('J.K. Rowling', '1965-07-31', NULL, NULL, NULL),
+    ('C.S. Lewis', NULL, NULL, NULL, NULL),
+    ('J.R.R. Tolkien', '1892-01-03', '1973-08-02', NULL, NULL),
+    ('Fyodor Dostoyevsky', NULL, NULL, NULL, NULL),
+    ('Henryk Sienkiewicz', NULL, NULL, NULL, NULL),
+    ('Andrzej Sapkowski', NULL, NULL, NULL, NULL),
+    ('Adam Mickiewicz', NULL, NULL, NULL, NULL),
+    ('Juliusz Słowacki', NULL, NULL, NULL, NULL),
+    ('Irena Jurgielewiczowa', NULL, NULL, NULL, NULL),
+    ('Lemony Snicket', NULL, NULL, NULL, NULL),
+    ('Thomas H. Cormen', NULL, NULL, NULL, NULL),
+    ('Charles E. Leiserson', NULL, NULL, NULL, NULL),
+    ('Ronald L. Rivest', NULL, NULL, NULL, NULL),
+    ('Clifford Stein', NULL, NULL, NULL, NULL);
 
   INSERT INTO books(title)
   VALUES
@@ -265,22 +278,28 @@ BEGIN;
     ('Seria Niefortunnych Zdarzeń'),
     ('Wstęp Do Algorytmów');
 
-  INSERT INTO authors(author_name, birth_date, death_date, phone_num, address)
+  INSERT INTO branches(branch_name, address, phone_num)
   VALUES
-    ('J.K. Rowling', '1965-07-31', NULL, NULL, NULL),
-    ('C.S. Lewis', NULL, NULL, NULL, NULL),
-    ('J.R.R. Tolkien', '1892-01-03', '1973-08-02', NULL, NULL),
-    ('Fyodor Dostoyevsky', NULL, NULL, NULL, NULL),
-    ('Henryk Sienkiewicz', NULL, NULL, NULL, NULL),
-    ('Andrzej Sapkowski', NULL, NULL, NULL, NULL),
-    ('Adam Mickiewicz', NULL, NULL, NULL, NULL),
-    ('Juliusz Słowacki', NULL, NULL, NULL, NULL),
-    ('Irena Jurgielewiczowa', NULL, NULL, NULL, NULL),
-    ('Lemony Snicket', NULL, NULL, NULL, NULL),
-    ('Thomas H. Cormen', NULL, NULL, NULL, NULL),
-    ('Charles E. Leiserson', NULL, NULL, NULL, NULL),
-    ('Ronald L. Rivest', NULL, NULL, NULL, NULL),
-    ('Clifford Stein', NULL, NULL, NULL, NULL);
+    ('Stare Miasto', 'ul. Rajska 1, 31-124 Kraków', '12 375 22 00'),
+    ('Grzegórzki', 'ul. Masarska 14, 33-332 Kraków', '12 431 00 68'),
+    ('Prądnik Czerwony', 'ul. Dobrego Pasterza 6, 31-416 Kraków', NULL),
+    ('Prądnik Biały', 'ul. Ojcowska 27, 31-344 Kraków', '797 301 011'),
+    ('Krowodrza', 'ul. Kazimierza Wielkiego 112/2, 30-074 Kraków', '012 636 9591'),
+    ('Bronowice', 'ul. Zarzecze 2, 30-134 Kraków', '12 632 13 75'),
+    ('Zwierzyniec', 'ul. Bolesława Prusa 8, 30-117 Kraków', '012 421 5667'),
+    ('Dębniki', 'ul. Praska 50, 30-322 Kraków', '012 267 0303'),
+    ('Łagiewniki', 'ul. Żywiecka 11, 30-427 Kraków', '012 268 1615'),
+    ('Borek Fałęcki', 'ul. Niemcewicza 5, 30-590 Kraków', NULL),
+    ('Swoszowice', 'ul. Inicjatywy Lokalnej 2, 30-499 Kraków', '12 264 9076'),
+    ('Podgórze Duchackie', 'ul. Ks. Tischnera 14, 30-500 Kraków', NULL),
+    ('Bieżanów', 'ul. Jana Kurczaba 4, 30-868 Kraków', '12 658 2612'),
+    ('Prokocim', 'ul. Dygasińskiego 1, 30-901 Kraków', NULL),
+    ('Podgórze', 'Rynek Podgórski 3, 30-533 Kraków', '12 656 6222'),
+    ('Czyżyny', 'Osiedle Dywizjonu 303 24, 31-874 Kraków', '12 647 6264'),
+    ('Mistrzejowice', 'ul. Miśnieńska 28, 31-612 Kraków', NULL),
+    ('Bieńczyce', 'Osiedle Kalinowe 14, 31-812 Kraków', '12 641 4562'),
+    ('Wzgórza Krzesławickie', 'Osiedle Na Stoku 5, 31-703 Kraków', '012 645 3002'),
+    ('Nowa Huta', 'Osiedle Centrum B 2, 31-927 Kraków', '12 644 7840');
 
   INSERT INTO author_book(author_id, book_id)
   VALUES
