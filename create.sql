@@ -577,4 +577,21 @@ BEGIN;
     ('Zakład Piller-Neumanna', NULL, NULL, NULL),
     ('Wydawnictwo „Znaki Czasu”', NULL, NULL, NULL);
 
+  INSERT INTO clients(client_name, document_number, address, phone_num)
+  VALUES
+    ('Jan Nowak',          'AVU 123231', 'Kozia Wólka 23',                 '12354213'),
+    ('Aleksander Nowak',   'AVU 321331', 'Piekry 53',                      '21737213'),
+    ('Jan Bąk',            'ADS 156531', 'Szczyrk 15',                     '18721092'),
+    ('Marian Paździoch',   'ACC 123531', 'Zakopane 1',                     '57387423'),
+    ('Ferdynand Kiepski',  'AVV 909231', 'Kraków ul. Wrocławska 12',       '23480913'),
+    ('Johny Bob',          'ALP 123325', 'Kraków ul. Łojasiewicza 6',      '47536191'),
+    ('Johny Deep',         'ALL 901723', 'Kraków ul. Tyniecka 127',        '09546723'),
+    ('Christina Aguillera','ALL 426112', 'Raciborowice 9',                 '13645781'),
+    ('Kamil But',          'AQW 897324', 'Michałowice 128',                '43587231'),
+    ('Jan Wipler',         'AVU 236542', 'Leśna Dolina 23',                '34284722'),
+    ('Aleksander Wielki',  'AQW 098312', 'Mistrzejowice ul. krakowska 127','53478349'),
+    ('Barbara Barbara',    'AME 284243', 'Raciborowice 12',                '37638932'),
+    ('Agnieszka Szop',     'AAB 942342', 'Piekary 123',                    '48593789'),
+    ('Maria Kita',         'ALP 231235', 'Zakopane 55',                    '13763244');
+
 COMMIT;
