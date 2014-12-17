@@ -240,6 +240,122 @@ BEGIN;
 
 COMMIT;
 
+
+
+BEGIN;
+
+  CREATE OR REPLACE FUNCTION authors_delete() RETURNS trigger AS $authors_delete$
+    BEGIN
+      DELETE FROM author_book WHERE author_id = OLD.author_id;
+      RETURN OLD;
+    END
+    $authors_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER authors_delete BEFORE DELETE ON authors
+  FOR EACH ROW EXECUTE PROCEDURE authors_delete();
+
+
+
+
+  CREATE OR REPLACE FUNCTION categories_delete() RETURNS trigger AS $categories_delete$
+    BEGIN
+      DELETE FROM book_category WHERE category_id = OLD.category_id;
+      RETURN OLD;
+    END
+    $categories_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER categories_delete BEFORE DELETE ON categories
+  FOR EACH ROW EXECUTE PROCEDURE categories_delete();
+
+
+
+  CREATE OR REPLACE FUNCTION publishers_delete() RETURNS trigger AS $publishers_delete$
+    BEGIN
+      UPDATE editions
+        SET publisher_id = NULL
+        WHERE publisher_id = OLD.publisher_id;
+      RETURN OLD;
+    END
+    $publishers_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER publishers_delete BEFORE DELETE ON publishers
+  FOR EACH ROW EXECUTE PROCEDURE publishers_delete();
+
+
+
+  CREATE OR REPLACE FUNCTION branches_delete() RETURNS trigger AS $branches_delete$
+    BEGIN
+      DELETE FROM specimens WHERE branch_id = OLD.branch_id;
+      RETURN OLD;
+    END
+    $branches_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER branches_delete BEFORE DELETE ON branches
+  FOR EACH ROW EXECUTE PROCEDURE branches_delete();
+
+
+  CREATE OR REPLACE FUNCTION specimens_delete() RETURNS trigger AS $specimens_delete$
+    BEGIN
+      DELETE FROM borrows WHERE specimen_id = OLD.specimen_id;
+      RETURN OLD;
+    END
+    $specimens_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER specimens_delete BEFORE DELETE ON specimens
+  FOR EACH ROW EXECUTE PROCEDURE specimens_delete();
+
+
+
+  CREATE OR REPLACE FUNCTION editions_delete() RETURNS trigger AS $editions_delete$
+    BEGIN
+      DELETE FROM specimens WHERE edition_id = OLD.edition_id;
+      RETURN OLD;
+    END
+    $editions_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER editions_delete BEFORE DELETE ON editions
+  FOR EACH ROW EXECUTE PROCEDURE editions_delete();
+
+
+
+  CREATE OR REPLACE FUNCTION books_delete() RETURNS trigger AS $books_delete$
+    BEGIN
+      DELETE FROM author_book WHERE book_id = OLD.book_id;
+      DELETE FROM book_category WHERE book_id = OLD.book_id;
+      DELETE FROM editions WHERE book_id = OLD.book_id;
+      DELETE FROM ratings WHERE book_id = OLD.book_id;
+      RETURN OLD;
+    END
+    $books_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER books_delete BEFORE DELETE ON books
+  FOR EACH ROW EXECUTE PROCEDURE books_delete();
+
+
+
+  CREATE OR REPLACE FUNCTION clients_delete() RETURNS trigger AS $clients_delete$
+    BEGIN
+      DELETE FROM ratings WHERE client_id = OLD.client_id;
+      DELETE FROM borrows WHERE client_id = OLD.client_id;
+      RETURN OLD;
+    END
+    $clients_delete$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER clients_delete BEFORE DELETE ON clients
+  FOR EACH ROW EXECUTE PROCEDURE clients_delete();
+
+COMMIT;
+
+
+
 BEGIN;
 
   CREATE OR REPLACE FUNCTION add_new_book (tit VARCHAR(100),
