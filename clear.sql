@@ -1,13 +1,17 @@
-\connect library
-drop table if exists author cascade;
-drop table if exists book cascade;
-drop table if exists branch cascade;
-drop table if exists category cascade;
-drop table if exists client cascade;
-drop table if exists publisher cascade;
-drop table if exists author_book cascade;
-drop table if exists book_categories cascade;
-drop table if exists book_edition cascade;
-drop table if exists book_ratings cascade;
-drop table if exists book_specimen cascade;
-drop table if exists client_borrows cascade;
+BEGIN;  
+
+  \connect library
+  DROP TABLE IF EXISTS authors        CASCADE;
+  DROP TABLE IF EXISTS books          CASCADE;
+  DROP TABLE IF EXISTS branches       CASCADE;
+  DROP TABLE IF EXISTS categories     CASCADE;
+  DROP TABLE IF EXISTS clients        CASCADE;
+  DROP TABLE IF EXISTS publishers     CASCADE;
+  DROP TABLE IF EXISTS author_book    CASCADE;
+  DROP TABLE IF EXISTS book_category  CASCADE;
+  DROP TABLE IF EXISTS editions       CASCADE;
+  DROP TABLE IF EXISTS ratings        CASCADE;
+  DROP TABLE IF EXISTS specimens      CASCADE;
+  DROP TABLE IF EXISTS borrows        CASCADE;
+
+COMMIT;
