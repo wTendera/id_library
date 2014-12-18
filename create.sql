@@ -19,31 +19,6 @@ BEGIN;
   );
 
 
-
-  CREATE TABLE books
-  (
-    book_id  serial        NOT NULL,
-    title    varchar(100)  NOT NULL,
-    
-    CONSTRAINT pk_books
-      PRIMARY KEY (book_id)
-  );
-
-
-
-  CREATE TABLE branches
-  (
-    branch_id    serial        NOT NULL,
-    branch_name  varchar(100)  NOT NULL UNIQUE,
-    address      varchar(100)  NOT NULL UNIQUE,
-    phone_num    varchar(20),
-    
-    CONSTRAINT pk_branches
-      PRIMARY KEY (branch_id)
-  );
-
-
-
   CREATE TABLE categories
   (
     category_id     serial        NOT NULL,
@@ -59,6 +34,100 @@ BEGIN;
   );
 
 
+  CREATE TABLE publishers
+  (
+    publisher_id    serial        NOT NULL,
+    publisher_name  varchar(100)  NOT NULL UNIQUE,
+    creation_date   date,
+    address         varchar(100)           UNIQUE,
+    phone_num       varchar(100)           UNIQUE,
+    
+    CONSTRAINT pk_publishers
+      PRIMARY KEY (publisher_id),
+
+    CONSTRAINT ck_publishers
+      CHECK (creation_date IS NULL OR creation_date<=current_date)
+
+  );
+
+
+  CREATE TABLE branches
+  (
+    branch_id    serial        NOT NULL,
+    branch_name  varchar(100)  NOT NULL UNIQUE,
+    address      varchar(100)  NOT NULL UNIQUE,
+    phone_num    varchar(20)            UNIQUE,
+    
+    CONSTRAINT pk_branches
+      PRIMARY KEY (branch_id)
+  );
+
+
+
+
+
+  CREATE TABLE books
+  (
+    book_id  serial        NOT NULL,
+    title    varchar(100)  NOT NULL,
+    
+    CONSTRAINT pk_books
+      PRIMARY KEY (book_id)
+  );
+
+
+  CREATE TABLE editions
+  (
+    edition_id     serial        NOT NULL,
+    isbn           varchar(15)   NOT NULL UNIQUE,
+    edition_name   varchar(100),
+    release_date   date,
+    book_id        integer       NOT NULL,
+    publisher_id   integer,
+    
+    CONSTRAINT pk_editions
+      PRIMARY KEY (edition_id),
+
+    CONSTRAINT uk_editions
+      UNIQUE (publisher_id,book_id,edition_name),
+
+    CONSTRAINT fk_editions_books
+      FOREIGN KEY (book_id)
+        REFERENCES books,
+
+    CONSTRAINT fk_editions_publishers
+      FOREIGN KEY (publisher_id)
+        REFERENCES publishers,
+
+    CONSTRAINT ck_editions
+      CHECK (release_date IS NULL OR release_date<=current_date)
+  );
+
+
+  CREATE TABLE specimens
+  (
+    specimen_id  serial       NOT NULL,
+    edition_id   integer      NOT NULL,
+    branch_id    integer      NOT NULL,
+    cover_type   char(4),
+    
+    CONSTRAINT pk_specimens
+      PRIMARY KEY (specimen_id),
+    
+    CONSTRAINT fk_specimens_editions
+      FOREIGN KEY (edition_id)
+        REFERENCES editions,
+
+    CONSTRAINT fk_specimens_branches
+      FOREIGN KEY (branch_id)
+        REFERENCES branches,
+
+    CONSTRAINT ck_specimens
+      CHECK (cover_type = 'hard' OR cover_type = 'soft')
+  );
+
+
+
 
   CREATE TABLE clients
   (
@@ -67,7 +136,7 @@ BEGIN;
     document_number  varchar(50)   NOT NULL  UNIQUE,
     address          varchar(100)  NOT NULL,
     phone_num        varchar(50),
-    signin_date      timestamp                    DEFAULT now(),
+    signin_date      timestamp                         DEFAULT now(),
     
     CONSTRAINT pk_clients
       PRIMARY KEY (client_id),
@@ -77,22 +146,60 @@ BEGIN;
   );
 
 
-
-  CREATE TABLE publishers
+  CREATE TABLE ratings
   (
-    publisher_id    serial        NOT NULL,
-    publisher_name  varchar(100)  NOT NULL UNIQUE,
-    creation_date   date,
-    address         varchar(100),
-    phone_num       varchar(100),
-    
-    CONSTRAINT pk_publishers
-      PRIMARY KEY (publisher_id),
+    client_id    integer    NOT NULL,
+    book_id      integer    NOT NULL,
+    rating       integer    NOT NULL,
+    rating_date  timestamp  NOT NULL  DEFAULT now(),
 
-    CONSTRAINT ck_publishers
-      CHECK (creation_date IS NULL OR creation_date<=current_date)
+    CONSTRAINT pk_ratings
+      PRIMARY KEY (client_id, book_id),
 
+    CONSTRAINT fk_ratings_books
+      FOREIGN KEY (book_id)
+        REFERENCES books,
+
+    CONSTRAINT fk_ratings_clients
+      FOREIGN KEY (client_id)
+        REFERENCES clients,
+
+    CONSTRAINT ck_ratings_0
+      CHECK (rating BETWEEN 1 AND 10),
+
+    CONSTRAINT ck_ratings_1
+      CHECK (rating_date IS NULL OR rating_date<=now())
   );
+
+
+  CREATE TABLE borrows
+  (
+    borrow_id          serial     NOT NULL,
+    client_id          integer    NOT NULL,
+    specimen_id        integer    NOT NULL,
+    borrow_date        timestamp  NOT NULL  DEFAULT now(),
+    return_date        timestamp,
+    return_final_date  timestamp  NOT NULL  DEFAULT now() + interval '1 month',
+    
+    CONSTRAINT pk_borrows
+      PRIMARY KEY (borrow_id),
+
+    CONSTRAINT fk_borrows_specimens
+      FOREIGN KEY (specimen_id)
+        REFERENCES specimens,
+
+    CONSTRAINT fk_borrows_clients
+      FOREIGN KEY (client_id)
+        REFERENCES clients,
+
+    CONSTRAINT ck_borrows_0
+      CHECK (borrow_date < return_final_date AND borrow_date<=now()),
+
+    CONSTRAINT ck_borrows_1
+      CHECK (return_date IS NULL OR (return_date<=now() AND borrow_date < return_date))
+  );
+  
+
 
 
 
@@ -130,112 +237,6 @@ BEGIN;
     CONSTRAINT fk_book_category_categories
       FOREIGN KEY (category_id)
         REFERENCES categories
-  );
-
-
-
-  CREATE TABLE editions
-  (
-    edition_id     serial        NOT NULL,
-    isbn           varchar(15)   NOT NULL UNIQUE,
-    edition_name   varchar(100),
-    release_date   date,
-    book_id        integer       NOT NULL,
-    publisher_id   integer,
-    
-    CONSTRAINT pk_editions
-      PRIMARY KEY (edition_id),
-
-    CONSTRAINT fk_editions_books
-      FOREIGN KEY (book_id)
-        REFERENCES books,
-
-    CONSTRAINT fk_editions_publishers
-      FOREIGN KEY (publisher_id)
-        REFERENCES publishers,
-
-    CONSTRAINT ck_editions
-      CHECK (release_date IS NULL OR release_date<=current_date)
-  );
-
-
-
-  CREATE TABLE ratings
-  (
-    client_id    integer    NOT NULL,
-    book_id      integer    NOT NULL,
-    rating       integer    NOT NULL,
-    rating_date  timestamp  NOT NULL  DEFAULT now(),
-
-    CONSTRAINT pk_ratings
-      PRIMARY KEY (client_id, book_id),
-
-    CONSTRAINT fk_ratings_books
-      FOREIGN KEY (book_id)
-        REFERENCES books,
-
-    CONSTRAINT fk_ratings_clients
-      FOREIGN KEY (client_id)
-        REFERENCES clients,
-
-    CONSTRAINT ck_ratings_0
-      CHECK (rating BETWEEN 1 AND 10),
-
-    CONSTRAINT ck_ratings_1
-      CHECK (rating_date IS NULL OR rating_date<=now())
-  );
-
-
-
-  CREATE TABLE specimens
-  (
-    specimen_id  serial       NOT NULL,
-    edition_id   integer      NOT NULL,
-    branch_id    integer      NOT NULL,
-    cover_type   char(4),
-    
-    CONSTRAINT pk_specimens
-      PRIMARY KEY (specimen_id),
-    
-    CONSTRAINT fk_specimens_editions
-      FOREIGN KEY (edition_id)
-        REFERENCES editions,
-
-    CONSTRAINT fk_specimens_branches
-      FOREIGN KEY (branch_id)
-        REFERENCES branches,
-
-    CONSTRAINT ck_specimens
-      CHECK (cover_type = 'hard' OR cover_type = 'soft')
-  );
-
-
-
-  CREATE TABLE borrows
-  (
-    borrow_id          serial     NOT NULL,
-    client_id          integer    NOT NULL,
-    specimen_id        integer    NOT NULL,
-    borrow_date        timestamp  NOT NULL  DEFAULT now(),
-    return_date        timestamp,
-    return_final_date  timestamp  NOT NULL  DEFAULT now() + interval '1 month',
-    
-    CONSTRAINT pk_borrows
-      PRIMARY KEY (borrow_id),
-    
-    CONSTRAINT fk_borrows_specimens
-      FOREIGN KEY (specimen_id)
-        REFERENCES specimens,
-
-    CONSTRAINT fk_borrows_clients
-      FOREIGN KEY (client_id)
-        REFERENCES clients,
-
-    CONSTRAINT ck_borrows_0
-      CHECK (borrow_date < return_final_date AND borrow_date<=now()),
-
-    CONSTRAINT ck_borrows_1
-      CHECK (return_date IS NULL OR (return_date<=now() AND borrow_date < return_date))
   );
 
 COMMIT;
@@ -471,7 +472,7 @@ BEGIN;
           END IF;
         END LOOP;
       END IF;
-        
+
       RETURN NEW;
     
     END
@@ -487,29 +488,113 @@ BEGIN;
   CREATE TRIGGER phone_check BEFORE INSERT OR UPDATE ON publishers
   FOR EACH ROW EXECUTE PROCEDURE phone_check();
 
+  
+
+
+  CREATE OR REPLACE FUNCTION borrow_check() RETURNS trigger AS $borrow_check$
+    DECLARE
+    BEGIN
+      IF EXISTS (SELECT * FROM borrows WHERE specimen_id = NEW.specimen_id AND return_date IS NULL) THEN
+        RAISE EXCEPTION 'Book is borrowed by somoene else';
+      END IF;
+      IF (SELECT COUNT(*) FROM borrows WHERE client_id = NEW.client_id AND return_date IS NULL) >=2 THEN
+        RAISE EXCEPTION 'You have borrowed two books already';
+      END IF;
+
+      RETURN NEW;
+    
+    END
+    $borrow_check$
+    LANGUAGE plpgsql;
+
+  CREATE TRIGGER borrow_check BEFORE INSERT OR UPDATE ON borrows
+  FOR EACH ROW EXECUTE PROCEDURE borrow_check();
 COMMIT;
 
 
 
 BEGIN;
 
-  CREATE OR REPLACE FUNCTION add_new_book (tit VARCHAR(100),
+  CREATE OR REPLACE FUNCTION find_book_id(tit VARCHAR(100)) RETURNS INTEGER AS $$
+    SELECT book_id FROM books WHERE tit = title ORDER BY book_id LIMIT 1;
+    $$
+    LANGUAGE sql;
+
+  CREATE OR REPLACE FUNCTION find_category_id(name VARCHAR(100)) RETURNS INTEGER AS $$
+    SELECT category_id FROM categories WHERE name = category_name ORDER BY category_id LIMIT 1;
+    $$
+    LANGUAGE sql;
+
+  CREATE OR REPLACE FUNCTION find_author_id(name VARCHAR(100)) RETURNS INTEGER AS $$
+    SELECT author_id FROM authors WHERE name = author_name ORDER BY author_id LIMIT 1;
+    $$
+    LANGUAGE sql;
+
+  CREATE OR REPLACE FUNCTION find_edition_id(isb VARCHAR(15)) RETURNS INTEGER AS $$
+    SELECT edition_id FROM editions WHERE isb = isbn ORDER BY edition_id LIMIT 1;
+    $$
+    LANGUAGE sql;
+
+  CREATE OR REPLACE FUNCTION find_publisher_id(name VARCHAR(100)) RETURNS INTEGER AS $$
+    SELECT publisher_id FROM publishers WHERE name = publisher_name ORDER BY publisher_id LIMIT 1;
+    $$
+    LANGUAGE sql;
+  
+  
+  
+  CREATE OR REPLACE FUNCTION add_new_category (cat VARCHAR(100),
+                                              above VARCHAR(100) DEFAULT NULL) RETURNS INTEGER AS $$
+    DECLARE
+      a_id INTEGER;
+      c_id INTEGER;
+    BEGIN
+
+
+      a_id = NULL;
+
+      IF above IS NOT NULL THEN
+        a_id = find_category_id(above);
+
+        IF a_id IS NULL THEN
+          a_id = nextval('categories_category_id_seq');
+          INSERT INTO categories (category_id, category_name)
+          VALUES (a_id, above);
+        END IF;
+      END IF;
+
+      c_id = nextval('categories_category_id_seq');
+
+      INSERT INTO categories(category_id, category_name, above_category)
+      VALUES (c_id, cat, a_id);
+
+      return c_id;
+
+    END
+    $$
+    LANGUAGE plpgsql;
+
+
+
+  CREATE OR REPLACE FUNCTION add_book (tit VARCHAR(100),
                                           auth VARCHAR(100)[] DEFAULT '{}',
-                                          cat VARCHAR(100)[] DEFAULT '{}') RETURNS VOID AS $$
+                                          cat VARCHAR(100)[] DEFAULT '{}') RETURNS INTEGER AS $$
     DECLARE
       b_id INTEGER;
       a_id INTEGER;
       c_id INTEGER;
       i VARCHAR(100);
     BEGIN
-      b_id = nextval('books_book_id_seq');
+      b_id = find_book_id(tit);
 
-      INSERT INTO books(book_id, title)
-      VALUES (b_id, tit);
+      IF b_id IS NULL THEN
+        b_id = nextval('books_book_id_seq');
+        INSERT INTO books(book_id, title)
+        VALUES (b_id, tit);
+      END IF;
 
       FOREACH i IN ARRAY auth
       LOOP
-        a_id = (SELECT author_id FROM authors WHERE i = author_name ORDER BY 1 LIMIT 1)::INTEGER;
+        a_id = find_author_id(i);
 
         IF a_id IS NULL THEN
           a_id = nextval('authors_author_id_seq');
@@ -523,7 +608,7 @@ BEGIN;
 
       FOREACH i IN ARRAY cat
       LOOP
-        c_id = (SELECT category_id FROM categories WHERE i = category_name ORDER BY 1 LIMIT 1)::INTEGER;
+        c_id = find_category_id(i);
 
         IF c_id IS NULL THEN
           c_id = nextval('categories_category_id_seq');
@@ -534,31 +619,91 @@ BEGIN;
         INSERT INTO book_category(book_id, category_id)
         VALUES (b_id, c_id);
       END LOOP;
+
+      RETURN b_id;
     END
     $$
     LANGUAGE plpgsql;
 
-  CREATE OR REPLACE FUNCTION add_new_category (cat VARCHAR(100),
-                                              above VARCHAR(100) DEFAULT NULL) RETURNS VOID AS $$
+
+
+  CREATE OR REPLACE FUNCTION add_new_edition  (tit VARCHAR(100),
+                                              isb VARCHAR(15),
+                                              edi VARCHAR(100),
+                                              pub VARCHAR(100) DEFAULT NULL,
+                                              rel date DEFAULT NULL,
+                                              auth VARCHAR(100)[] DEFAULT '{}',
+                                              cat VARCHAR(100)[] DEFAULT '{}') RETURNS INTEGER AS $$
     DECLARE
-      a_id INTEGER;
-
+      e_id INTEGER;
+      p_id INTEGER;
+      c_id INTEGER;
+      b_id INTEGER;
+      i VARCHAR(100);
     BEGIN
+      b_id = add_book(tit, auth, cat);
 
-      a_id = NULL;
+      e_id = find_edition_id(isbn);
+      p_id = find_publisher_id(pub);
 
-      IF above IS NOT NULL THEN
-        a_id = (SELECT category_id FROM categories WHERE above = category_name ORDER BY 1 LIMIT 1)::INTEGER;
-        
-        IF a_id IS NULL THEN
-          a_id = nextval('categories_category_id_seq');
-          INSERT INTO categories (category_id, category_name)
-          VALUES (a_id, above);
-        END IF;
+
+      IF e_id IS NOT NULL THEN
+        RAISE EXCEPTION 'Exists edition with the same ISBN. Please use UPDATE.';
       END IF;
 
-      INSERT INTO categories(category_name, above_category)
-      VALUES (cat, a_id);
+      e_id = nextval('editions_edition_id_seq');
+
+
+      IF p_id IS NULL THEN
+        p_id = nextval('publishers_publisher_id_seq');
+        INSERT INTO publisher(publisher_id, publisher_name)
+        VALUES (p_id, pub);
+      END IF;
+
+      INSERT INTO editions(edition_id, isbn, edition_name, publisher_id, release_date)
+      VALUES (e_id, isb, edi, p_id, rel);
+
+      RETURN e_id;
+    END
+    $$
+    LANGUAGE plpgsql;
+
+
+
+
+  CREATE OR REPLACE FUNCTION add_new_specimen (tit VARCHAR(100),
+                                              isb VARCHAR(15),
+                                              bra VARCHAR(100),
+                                              cov CHAR(4) DEFAULT NULL,
+                                              amo INTEGER DEFAULT 1,
+                                              edi VARCHAR(100) DEFAULT NULL,
+                                              auth VARCHAR(100)[] DEFAULT '{}',
+                                              cat VARCHAR(100)[] DEFAULT '{}',
+                                              pub VARCHAR(100) DEFAULT NULL,
+                                              rel date DEFAULT NULL) RETURNS VOID AS $$
+    DECLARE
+      e_id INTEGER;
+      b_id INTEGER;
+    BEGIN
+      b_id = add_book(tit, auth, cat);
+
+      e_id = find_edition_id(ISBN);
+
+      IF e_id IS NULL AND edi IS NOT NULL THEN
+        e_id = add_new_edition(tit, auth, cat, isb, edi, pub, rel);
+      END IF;
+
+      IF e_id IS NULL AND edi IS NULL THEN
+        RAISE EXCEPTION 'Edition does not exist and cannot be created without name';
+      END IF;
+
+
+
+      FOR i IN 1 .. amo
+      LOOP
+        INSERT INTO specimens(edition_id, branch_name, cover_type)
+        VALUES (e_id, bra, cov);
+      END LOOP;
 
     END
     $$
