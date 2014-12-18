@@ -244,6 +244,55 @@ COMMIT;
 
 
 BEGIN;
+  CREATE OR REPLACE VIEW titles_info AS
+    SELECT title AS "Title",
+           string_agg(author_name, ', ') AS "Authors",
+           string_agg(category_name, ', ') AS "Categories",
+           string_agg(DISTINCT publisher_name, ', ') AS "Publishers",
+           string_agg(DISTINCT branch_name, ', ') AS "Branches",
+           COUNT(DISTINCT specimen_id) AS "Amount",
+           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS "Available"  
+    FROM books
+    LEFT JOIN author_book USING (book_id)
+    LEFT JOIN authors USING (author_id)
+    LEFT JOIN book_category USING (book_id)
+    LEFT JOIN categories USING (category_id)
+    LEFT JOIN editions USING (book_id)
+    LEFT JOIN publishers USING (publisher_id)
+    LEFT JOIN specimens USING (edition_id)
+    LEFT JOIN branches USING (branch_id)
+    LEFT JOIN borrows USING (specimen_id)
+    GROUP BY book_id
+    ORDER BY title;
+
+  CREATE OR REPLACE VIEW authors_info AS
+    SELECT author_name AS "Name",
+           birth_date AS "Date of birth",
+           death_date AS "Date of death",
+           string_agg(title, '; ') AS "Books",
+           string_agg(category_name, ', ') AS "Categories",
+           COUNT(DISTINCT specimen_id) AS "Amount",
+           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS "Available"  
+    FROM authors
+    LEFT JOIN author_book USING (author_id)
+    LEFT JOIN books USING (book_id)
+    LEFT JOIN book_category USING (book_id)
+    LEFT JOIN categories USING (category_id)
+    LEFT JOIN editions USING (book_id)
+    LEFT JOIN publishers USING (publisher_id)
+    LEFT JOIN specimens USING (edition_id)
+    LEFT JOIN branches USING (branch_id)
+    LEFT JOIN borrows USING (specimen_id)
+    GROUP BY author_id
+    ORDER BY author_name;
+
+
+COMMIT;
+
+
+
+
+BEGIN;
 
   CREATE OR REPLACE FUNCTION authors_delete() RETURNS trigger AS $authors_delete$
     BEGIN
@@ -704,6 +753,63 @@ BEGIN;
         INSERT INTO specimens(edition_id, branch_name, cover_type)
         VALUES (e_id, bra, cov);
       END LOOP;
+
+    END
+    $$
+    LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION add_new_rating (tit VARCHAR(100),
+                                              cli INTEGER,
+                                              rat INTEGER) RETURNS VOID AS $$
+    DECLARE
+      b_id INTEGER;
+    BEGIN
+      b_id = find_book_id(tit);
+
+      IF b_id IS NULL THEN
+        RAISE EXCEPTION 'Book does not exists';
+      END IF;
+
+      INSERT INTO rating(client_id, book_id, rating)
+      VALUES (cli, b_id, rat);
+    END
+    $$
+    LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION add_new_borrow (cli INTEGER,
+                                              tit VARCHAR(100),
+                                              bra VARCHAR(100),
+                                              isb VARCHAR(15) DEFAULT NULL,
+                                              aut VARCHAR(100) DEFAULT NULL,
+                                              edi VARCHAR(100) DEFAULT NULL,
+                                              pub VARCHAR(100) DEFAULT NULL) RETURNS VOID AS $$
+    DECLARE
+      s_id INTEGER;
+    BEGIN
+      s_id =  (SELECT specimen_id 
+              FROM specimens
+              LEFT JOIN branches USING (branch_id)
+              LEFT JOIN edition USING (edition_id)
+              LEFT JOIN books USING (book_id)
+              LEFT JOIN publishers USING (publisher_id)
+              LEFT JOIN author_book USING (book_id)
+              LEFT JOIN author USING (author_id)
+              LEFT JOIN borrows USING (specimen_id)
+              WHERE tit = title
+              AND bra = branch_name
+              AND (isb IS NULL OR isb=isbn)
+              AND (aut IS NULL OR aut=author_name)
+              AND (edi IS NULL OR edi = edition_name)
+              AND (pub IS NULL OR pub = publisher_name)
+              AND (borrow_date IS NULL OR return_date IS NOT NULL)
+              LIMIT 1)::integer;
+
+      IF s_id IS NULL THEN
+        RAISE EXCEPTION 'There is no book like this or everything is borrowed';
+      END IF;
+
+      INSERT INTO borrows(client_id, specimen_id)
+      VALUES (cli, s_id);
 
     END
     $$
