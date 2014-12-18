@@ -246,8 +246,8 @@ COMMIT;
 BEGIN;
   CREATE OR REPLACE VIEW titles_info AS
     SELECT title AS "Title",
-           string_agg(author_name, ', ') AS "Authors",
-           string_agg(category_name, ', ') AS "Categories",
+           string_agg(DISTINCT author_name, ', ') AS "Authors",
+           string_agg(DISTINCT category_name, ', ') AS "Categories",
            string_agg(DISTINCT publisher_name, ', ') AS "Publishers",
            string_agg(DISTINCT branch_name, ', ') AS "Branches",
            COUNT(DISTINCT specimen_id) AS "Amount",
@@ -269,8 +269,8 @@ BEGIN;
     SELECT author_name AS "Name",
            birth_date AS "Date of birth",
            death_date AS "Date of death",
-           string_agg(title, '; ') AS "Books",
-           string_agg(category_name, ', ') AS "Categories",
+           string_agg(DISTINCT title, '; ') AS "Books",
+           string_agg(DISTINCT category_name, ', ') AS "Categories",
            COUNT(DISTINCT specimen_id) AS "Amount",
            COUNT(DISTINCT specimen_id) - COUNT(return_date) AS "Available"  
     FROM authors
@@ -589,6 +589,10 @@ BEGIN;
     $$
     LANGUAGE sql;
   
+  CREATE OR REPLACE FUNCTION find_branch_id(name VARCHAR(100)) RETURNS INTEGER AS $$
+    SELECT branch_id FROM branches WHERE name = branch_name ORDER BY branch_id LIMIT 1;
+    $$
+    LANGUAGE sql;
   
   
   CREATE OR REPLACE FUNCTION add_new_category (cat VARCHAR(100),
@@ -692,7 +696,7 @@ BEGIN;
     BEGIN
       b_id = add_book(tit, auth, cat);
 
-      e_id = find_edition_id(isbn);
+      e_id = find_edition_id(isb);
       p_id = find_publisher_id(pub);
 
 
@@ -703,14 +707,14 @@ BEGIN;
       e_id = nextval('editions_edition_id_seq');
 
 
-      IF p_id IS NULL THEN
+      IF p_id IS NULL AND pub IS NOT NULL THEN
         p_id = nextval('publishers_publisher_id_seq');
-        INSERT INTO publisher(publisher_id, publisher_name)
+        INSERT INTO publishers(publisher_id, publisher_name)
         VALUES (p_id, pub);
       END IF;
 
-      INSERT INTO editions(edition_id, isbn, edition_name, publisher_id, release_date)
-      VALUES (e_id, isb, edi, p_id, rel);
+      INSERT INTO editions(book_id, edition_id, isbn, edition_name, publisher_id, release_date)
+      VALUES (b_id, e_id, isb, edi, p_id, rel);
 
       RETURN e_id;
     END
@@ -722,7 +726,7 @@ BEGIN;
 
   CREATE OR REPLACE FUNCTION add_new_specimen (tit VARCHAR(100),
                                               isb VARCHAR(15),
-                                              bra VARCHAR(100),
+                                              br_id INTEGER,
                                               cov CHAR(4) DEFAULT NULL,
                                               amo INTEGER DEFAULT 1,
                                               edi VARCHAR(100) DEFAULT NULL,
@@ -734,24 +738,23 @@ BEGIN;
       e_id INTEGER;
       b_id INTEGER;
     BEGIN
-      b_id = add_book(tit, auth, cat);
 
-      e_id = find_edition_id(ISBN);
+      b_id = add_new_edition(tit, isb, edi, pub, rel, auth, cat);
+
+      e_id = find_edition_id(isb);
 
       IF e_id IS NULL AND edi IS NOT NULL THEN
-        e_id = add_new_edition(tit, auth, cat, isb, edi, pub, rel);
+        e_id = add_new_edition(tit, isb, edi, pub, rel, auth, cat);
       END IF;
 
       IF e_id IS NULL AND edi IS NULL THEN
         RAISE EXCEPTION 'Edition does not exist and cannot be created without name';
-      END IF;
-
-
+      END IF; 
 
       FOR i IN 1 .. amo
       LOOP
-        INSERT INTO specimens(edition_id, branch_name, cover_type)
-        VALUES (e_id, bra, cov);
+        INSERT INTO specimens(edition_id, branch_id, cover_type)
+        VALUES (e_id, br_id, cov);
       END LOOP;
 
     END
