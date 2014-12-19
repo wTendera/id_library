@@ -692,10 +692,10 @@ BEGIN;
   CREATE OR REPLACE FUNCTION add_new_edition  (tit VARCHAR(100),
                                               isb VARCHAR(30),
                                               edi VARCHAR(100),
-                                              pub VARCHAR(100) DEFAULT NULL,
-                                              rel date DEFAULT NULL,
                                               auth VARCHAR(100)[] DEFAULT '{}',
-                                              cat VARCHAR(100)[] DEFAULT '{}') RETURNS INTEGER AS $$
+                                              cat VARCHAR(100)[] DEFAULT '{}',
+                                              pub VARCHAR(100) DEFAULT NULL,
+                                              rel date DEFAULT NULL) RETURNS INTEGER AS $$
     DECLARE
       e_id INTEGER;
       p_id INTEGER;
@@ -706,6 +706,11 @@ BEGIN;
       b_id = add_book(tit, auth, cat);
 
       e_id = find_edition_id(isb);
+
+      IF e_id IS NULL AND edi IS NULL THEN
+        RAISE EXCEPTION 'Edition does not exist and cannot be created without name';
+      END IF; 
+
       p_id = find_publisher_id(pub);
 
 
@@ -731,34 +736,21 @@ BEGIN;
     LANGUAGE plpgsql;
 
 
-
-
   CREATE OR REPLACE FUNCTION add_new_specimen (tit VARCHAR(100),
                                               isb VARCHAR(30),
                                               br_id INTEGER,
-                                              cov CHAR(4) DEFAULT NULL,
                                               amo INTEGER DEFAULT 1,
-                                              edi VARCHAR(100) DEFAULT NULL,
+                                              cov CHAR(4) DEFAULT NULL,
                                               auth VARCHAR(100)[] DEFAULT '{}',
                                               cat VARCHAR(100)[] DEFAULT '{}',
+                                              edi VARCHAR(100) DEFAULT NULL,
                                               pub VARCHAR(100) DEFAULT NULL,
                                               rel date DEFAULT NULL) RETURNS VOID AS $$
     DECLARE
       e_id INTEGER;
       b_id INTEGER;
     BEGIN
-
-      b_id = add_new_edition(tit, isb, edi, pub, rel, auth, cat);
-
-      e_id = find_edition_id(isb);
-
-      IF e_id IS NULL AND edi IS NOT NULL THEN
-        e_id = add_new_edition(tit, isb, edi, pub, rel, auth, cat);
-      END IF;
-
-      IF e_id IS NULL AND edi IS NULL THEN
-        RAISE EXCEPTION 'Edition does not exist and cannot be created without name';
-      END IF; 
+      e_id = add_new_edition(tit, isb, edi, auth, cat, pub, rel);
 
       FOR i IN 1 .. amo
       LOOP
