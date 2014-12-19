@@ -79,7 +79,7 @@ BEGIN;
   CREATE TABLE editions
   (
     edition_id     serial        NOT NULL,
-    isbn           varchar(15)   NOT NULL UNIQUE,
+    isbn           varchar(30)   NOT NULL UNIQUE,
     edition_name   varchar(100),
     release_date   date,
     book_id        integer       NOT NULL,
@@ -404,35 +404,45 @@ BEGIN;
 
 
 
+
   CREATE OR REPLACE FUNCTION isbn_check() RETURNS trigger AS $isbn_check$
     DECLARE
       sum NUMERIC;
       c CHAR;
       x NUMERIC;
+      len INTEGER;
+      corisbn VARCHAR(15);
     
     BEGIN
     
       sum=0;
+      corisbn = '';
+
+      FOR i IN 1 .. char_length(NEW.isbn)
+      LOOP
+      	c = SUBSTRING(NEW.isbn FROM i FOR 1);
+        IF c NOT BETWEEN '0' AND '9' AND c != '-' AND c!='X' AND c!=' ' THEN
+        	RAISE EXCEPTION 'Incorrect sign used (digits, "X", "-" AND spaces allowed only)';
+       	END IF;
+
+       	IF c BETWEEN '0' AND '9' OR c = 'X' THEN
+       	  corisbn = corisbn || c;
+       	END IF;
+      END LOOP;
+
+      NEW.isbn = corisbn;
+
       
       CASE
         WHEN char_length(NEW.isbn) = 10 THEN
           FOR i IN 1 .. 9
           LOOP
             c = SUBSTRING(NEW.isbn FROM i FOR 1);
-    
-            IF c NOT BETWEEN '0' AND '9' THEN
-              RAISE EXCEPTION 'Incorrect sign used (digits and X allowed only)';
-            END IF;
-    
             x = c::integer;
             sum = sum + i*x;
           END LOOP;
 
           c = SUBSTRING(NEW.isbn FROM 10 FOR 1);
-
-          IF (c NOT BETWEEN '0' AND '9' AND c!='X') THEN
-            RAISE EXCEPTION 'Incorrect sign used (digits and X allowed only)';
-          END IF;
 
           IF (c='X' AND sum%11 != 10) OR (c!='X' AND c::integer != sum%11) THEN
             RAISE EXCEPTION 'Incorrect ISBN (checksum error)';
@@ -442,11 +452,6 @@ BEGIN;
           FOR i IN 1 .. 13
           LOOP
             c = SUBSTRING(NEW.isbn FROM i FOR 1);
-
-            IF c NOT BETWEEN '0' AND '9' THEN
-              RAISE EXCEPTION 'Incorrect signed used (digits and X allowed only)';
-            END IF;
-
             x = CAST (c AS INTEGER);
 
             IF i=13 THEN
@@ -466,7 +471,7 @@ BEGIN;
           END IF;
         
         ELSE
-          RAISE EXCEPTION 'Incorrect length or incorrect sign used (digits and X allowed only)';
+          RAISE EXCEPTION 'Incorrect length';
       END CASE;
 
 
@@ -579,7 +584,7 @@ BEGIN;
     $$
     LANGUAGE sql;
 
-  CREATE OR REPLACE FUNCTION find_edition_id(isb VARCHAR(15)) RETURNS INTEGER AS $$
+  CREATE OR REPLACE FUNCTION find_edition_id(isb VARCHAR(30)) RETURNS INTEGER AS $$
     SELECT edition_id FROM editions WHERE isb = isbn ORDER BY edition_id LIMIT 1;
     $$
     LANGUAGE sql;
@@ -655,8 +660,10 @@ BEGIN;
           VALUES (a_id, i);
         END IF;
 
-        INSERT INTO author_book(author_id, book_id)
-        VALUES (a_id, b_id);
+        IF NOT EXISTS (SELECT * FROM author_book WHERE author_id = a_id AND book_id=b_id) THEN
+          INSERT INTO author_book(author_id, book_id)
+          VALUES (a_id, b_id);
+        END IF;
       END LOOP;
 
       FOREACH i IN ARRAY cat
@@ -669,8 +676,10 @@ BEGIN;
           VALUES (c_id, i);
         END IF;
 
-        INSERT INTO book_category(book_id, category_id)
-        VALUES (b_id, c_id);
+        IF NOT EXISTS (SELECT * FROM book_category WHERE category_id = c_id AND book_id=b_id) THEN
+          INSERT INTO book_category(book_id, category_id)
+          VALUES (b_id, c_id);
+        END IF;
       END LOOP;
 
       RETURN b_id;
@@ -681,7 +690,7 @@ BEGIN;
 
 
   CREATE OR REPLACE FUNCTION add_new_edition  (tit VARCHAR(100),
-                                              isb VARCHAR(15),
+                                              isb VARCHAR(30),
                                               edi VARCHAR(100),
                                               pub VARCHAR(100) DEFAULT NULL,
                                               rel date DEFAULT NULL,
@@ -725,7 +734,7 @@ BEGIN;
 
 
   CREATE OR REPLACE FUNCTION add_new_specimen (tit VARCHAR(100),
-                                              isb VARCHAR(15),
+                                              isb VARCHAR(30),
                                               br_id INTEGER,
                                               cov CHAR(4) DEFAULT NULL,
                                               amo INTEGER DEFAULT 1,
@@ -779,10 +788,13 @@ BEGIN;
     $$
     LANGUAGE plpgsql;
 
+
+
+
     CREATE OR REPLACE FUNCTION add_new_borrow (cli INTEGER,
                                               tit VARCHAR(100),
                                               bra VARCHAR(100),
-                                              isb VARCHAR(15) DEFAULT NULL,
+                                              isb VARCHAR(30) DEFAULT NULL,
                                               aut VARCHAR(100) DEFAULT NULL,
                                               edi VARCHAR(100) DEFAULT NULL,
                                               pub VARCHAR(100) DEFAULT NULL) RETURNS VOID AS $$
