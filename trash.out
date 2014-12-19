@@ -1,0 +1,916 @@
+BEGIN
+You are now connected to database "library" as user "ljk".
+ add_new_category 
+------------------
+                2
+(1 row)
+
+ add_new_category 
+------------------
+                3
+(1 row)
+
+ add_new_category 
+------------------
+                4
+(1 row)
+
+ add_new_category 
+------------------
+                5
+(1 row)
+
+ add_new_category 
+------------------
+                6
+(1 row)
+
+ add_new_category 
+------------------
+                7
+(1 row)
+
+ add_new_category 
+------------------
+                8
+(1 row)
+
+ add_new_category 
+------------------
+                9
+(1 row)
+
+ add_new_category 
+------------------
+               10
+(1 row)
+
+ add_new_category 
+------------------
+               11
+(1 row)
+
+ add_new_category 
+------------------
+               12
+(1 row)
+
+ add_new_category 
+------------------
+               13
+(1 row)
+
+ add_new_category 
+------------------
+               14
+(1 row)
+
+ add_new_category 
+------------------
+               15
+(1 row)
+
+ add_new_category 
+------------------
+               16
+(1 row)
+
+ add_new_category 
+------------------
+               17
+(1 row)
+
+ add_new_category 
+------------------
+               19
+(1 row)
+
+ add_new_category 
+------------------
+               20
+(1 row)
+
+ add_new_category 
+------------------
+               21
+(1 row)
+
+ add_new_category 
+------------------
+               22
+(1 row)
+
+ add_new_category 
+------------------
+               23
+(1 row)
+
+ add_new_category 
+------------------
+               24
+(1 row)
+
+ add_new_category 
+------------------
+               25
+(1 row)
+
+ add_new_category 
+------------------
+               26
+(1 row)
+
+ add_new_category 
+------------------
+               27
+(1 row)
+
+ add_new_category 
+------------------
+               28
+(1 row)
+
+ add_new_category 
+------------------
+               29
+(1 row)
+
+ add_new_category 
+------------------
+               30
+(1 row)
+
+ add_new_category 
+------------------
+               31
+(1 row)
+
+ add_new_category 
+------------------
+               32
+(1 row)
+
+ add_new_category 
+------------------
+               33
+(1 row)
+
+ add_new_category 
+------------------
+               34
+(1 row)
+
+ add_new_category 
+------------------
+               36
+(1 row)
+
+ add_new_category 
+------------------
+               37
+(1 row)
+
+ add_new_category 
+------------------
+               38
+(1 row)
+
+ add_new_category 
+------------------
+               39
+(1 row)
+
+ add_new_category 
+------------------
+               40
+(1 row)
+
+ add_new_category 
+------------------
+               41
+(1 row)
+
+ add_new_category 
+------------------
+               42
+(1 row)
+
+ add_new_category 
+------------------
+               43
+(1 row)
+
+ add_new_category 
+------------------
+               44
+(1 row)
+
+ add_new_category 
+------------------
+               46
+(1 row)
+
+ add_new_category 
+------------------
+               47
+(1 row)
+
+ add_new_category 
+------------------
+               48
+(1 row)
+
+ add_new_category 
+------------------
+               49
+(1 row)
+
+ add_new_category 
+------------------
+               50
+(1 row)
+
+ add_new_category 
+------------------
+               51
+(1 row)
+
+ add_new_category 
+------------------
+               52
+(1 row)
+
+ add_new_category 
+------------------
+               53
+(1 row)
+
+ add_new_category 
+------------------
+               54
+(1 row)
+
+ add_new_category 
+------------------
+               55
+(1 row)
+
+ add_new_category 
+------------------
+               56
+(1 row)
+
+ add_new_category 
+------------------
+               57
+(1 row)
+
+ add_new_category 
+------------------
+               58
+(1 row)
+
+ add_new_category 
+------------------
+               59
+(1 row)
+
+ add_new_category 
+------------------
+               60
+(1 row)
+
+ add_new_category 
+------------------
+               61
+(1 row)
+
+ add_new_category 
+------------------
+               62
+(1 row)
+
+INSERT 0 20
+INSERT 0 52
+INSERT 0 14
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+ add_new_specimen 
+------------------
+ 
+(1 row)
+
+COMMIT

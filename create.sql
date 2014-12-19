@@ -245,13 +245,13 @@ COMMIT;
 
 BEGIN;
   CREATE OR REPLACE VIEW titles_info AS
-    SELECT title AS "Title",
-           string_agg(DISTINCT author_name, ', ') AS "Authors",
-           string_agg(DISTINCT category_name, ', ') AS "Categories",
-           string_agg(DISTINCT publisher_name, ', ') AS "Publishers",
-           string_agg(DISTINCT branch_name, ', ') AS "Branches",
-           COUNT(DISTINCT specimen_id) AS "Amount",
-           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS "Available"  
+    SELECT title AS title,
+           string_agg(DISTINCT author_name, ','||E'\n') AS authors,
+           string_agg(DISTINCT category_name, ','||E'\n') AS categories,
+           string_agg(DISTINCT publisher_name, ','||E'\n') AS publishers,
+           string_agg(DISTINCT branch_name, ','||E'\n') AS branches,
+           COUNT(DISTINCT specimen_id) AS amount,
+           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS available 
     FROM books
     LEFT JOIN author_book USING (book_id)
     LEFT JOIN authors USING (author_id)
@@ -266,13 +266,13 @@ BEGIN;
     ORDER BY title;
 
   CREATE OR REPLACE VIEW authors_info AS
-    SELECT author_name AS "Name",
-           birth_date AS "Date of birth",
-           death_date AS "Date of death",
-           string_agg(DISTINCT title, '; ') AS "Books",
-           string_agg(DISTINCT category_name, ', ') AS "Categories",
-           COUNT(DISTINCT specimen_id) AS "Amount",
-           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS "Available"  
+    SELECT author_name AS name,
+           birth_date AS birth,
+           death_date AS death,
+           string_agg(DISTINCT title, ';'||E'\n') AS books,
+           string_agg(DISTINCT category_name, ','||E'\n') AS categories,
+           COUNT(DISTINCT specimen_id) AS amount,
+           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS available 
     FROM authors
     LEFT JOIN author_book USING (author_id)
     LEFT JOIN books USING (book_id)
