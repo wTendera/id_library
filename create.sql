@@ -251,7 +251,7 @@ BEGIN;
            string_agg(DISTINCT publisher_name, ','||E'\n') AS publishers,
            string_agg(DISTINCT branch_name, ','||E'\n') AS branches,
            COUNT(DISTINCT specimen_id) AS amount,
-           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS available 
+           COUNT(DISTINCT specimen_id) - COUNT(NULLIF(borrow_date IS NULL OR return_date IS NOT NULL, TRUE)) AS available 
     FROM books
     LEFT JOIN author_book USING (book_id)
     LEFT JOIN authors USING (author_id)
@@ -272,7 +272,7 @@ BEGIN;
            string_agg(DISTINCT title, ';'||E'\n') AS books,
            string_agg(DISTINCT category_name, ','||E'\n') AS categories,
            COUNT(DISTINCT specimen_id) AS amount,
-           COUNT(DISTINCT specimen_id) - COUNT(return_date) AS available 
+           COUNT(DISTINCT specimen_id) - COUNT(NULLIF(borrow_date IS NULL OR return_date IS NOT NULL, TRUE)) AS available 
     FROM authors
     LEFT JOIN author_book USING (author_id)
     LEFT JOIN books USING (book_id)
@@ -785,7 +785,7 @@ BEGIN;
 
     CREATE OR REPLACE FUNCTION add_new_borrow (cli INTEGER,
                                               tit VARCHAR(100),
-                                              bra VARCHAR(100),
+                                              bra INTEGER,
                                               isb VARCHAR(30) DEFAULT NULL,
                                               aut VARCHAR(100) DEFAULT NULL,
                                               edi VARCHAR(100) DEFAULT NULL,
@@ -796,14 +796,14 @@ BEGIN;
       s_id =  (SELECT specimen_id 
               FROM specimens
               LEFT JOIN branches USING (branch_id)
-              LEFT JOIN edition USING (edition_id)
+              LEFT JOIN editions USING (edition_id)
               LEFT JOIN books USING (book_id)
               LEFT JOIN publishers USING (publisher_id)
               LEFT JOIN author_book USING (book_id)
-              LEFT JOIN author USING (author_id)
+              LEFT JOIN authors USING (author_id)
               LEFT JOIN borrows USING (specimen_id)
               WHERE tit = title
-              AND bra = branch_name
+              AND bra = branch_id
               AND (isb IS NULL OR isb=isbn)
               AND (aut IS NULL OR aut=author_name)
               AND (edi IS NULL OR edi = edition_name)
