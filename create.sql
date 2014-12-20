@@ -323,9 +323,7 @@ BEGIN;
 
   CREATE OR REPLACE FUNCTION publishers_delete() RETURNS trigger AS $publishers_delete$
     BEGIN
-      UPDATE editions
-        SET publisher_id = NULL
-        WHERE publisher_id = OLD.publisher_id;
+      DELETE FROM editions WHERE publisher_id = OLD.publisher_id;
       RETURN OLD;
     END
     $publishers_delete$
@@ -358,8 +356,6 @@ BEGIN;
 
   CREATE TRIGGER specimens_delete BEFORE DELETE ON specimens
   FOR EACH ROW EXECUTE PROCEDURE specimens_delete();
-
-
 
   CREATE OR REPLACE FUNCTION editions_delete() RETURNS trigger AS $editions_delete$
     BEGIN

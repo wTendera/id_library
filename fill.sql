@@ -130,6 +130,7 @@ BEGIN;
     ('Wydawnictwo im. Konstytucji 3 Maja', NULL, NULL, NULL),
     ('Wydawnictwo Kirin', NULL, NULL, NULL),
     ('Wydawnictwo Muzyczne GAMMA', NULL, NULL, NULL),
+
     ('Wydawnictwo Pedagogiczne Operon', NULL, NULL, NULL),
     ('Wydawnictwo Piotra Marciszuka Stentor', NULL, NULL, NULL),
     ('Wydawnictwo Politechniki Śląskiej', NULL, NULL, NULL),
@@ -476,6 +477,56 @@ BEGIN;
   SELECT add_new_specimen('Sezon burz', '7000000139', 7, 27, 'soft', '{Andrzej Sapkowski}', '{}', 'Wydanie pierwsze', 'Apostolicum');
   SELECT add_new_specimen('Seria niefortunnych zdarzeń', '800000013X', 2, 17, 'soft', '{Lemony Snicket}', '{}', 'Wydanie pierwsze', 'Apostolicum');
   SELECT add_new_specimen('Wprowadzenie do algorytmów', '9000000130', 1, 5, 'soft', '{Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein}', '{Informatyka i matematyka}', 'Wydanie pierwsze', 'Apostolicum');
+
+
+  SELECT add_new_borrow(1, 'Jaskółki i Amazonki', 5);
+  SELECT add_new_borrow(6, 'Germinal', 7);
+  SELECT add_new_borrow(3, 'Targowisko próżności', 1);
+  SELECT add_new_borrow(5, 'Opętanie', 2);
+  SELECT add_new_borrow(8, 'Opowieść wigilijna', 5);
+  SELECT add_new_borrow(2, 'Atlas chmur', 7);
+  SELECT add_new_borrow(2, 'Kolor purpury', 2);
+  SELECT add_new_borrow(12, 'Okruchy dnia', 1);
+  SELECT add_new_borrow(9, 'Pani Bovary', 2);
+  SELECT add_new_borrow(21, 'A Fine Balance', 1);
+  SELECT add_new_borrow(3, 'Pajęczyna Szarloty', 4);
+  SELECT add_new_borrow(7, 'Pięć osób, które spotykamy w niebie', 5);
+  SELECT add_new_borrow(12, 'Przygody Sherlocka Holmesa', 7);
+  SELECT add_new_borrow(32, 'The Faraway Tree Collection', 1);
+  SELECT add_new_borrow(34, 'Jądro ciemności', 2);
+  SELECT add_new_borrow(102, 'Mały Książę', 5);
+  SELECT add_new_borrow(13, 'Fabryka os', 7);
+  SELECT add_new_borrow(57, 'Wodnikowe Wzgórze', 2);
+  SELECT add_new_borrow(27, 'Sprzysiężenie głupców', 1);
+  SELECT add_new_borrow(10, 'Miasteczko jak Alece Springs', 2);
+  SELECT add_new_borrow(22, 'Trzej muszkieterowie', 1);
+  SELECT add_new_borrow(33, 'Hamlet', 4);
+  SELECT add_new_borrow(34, 'Charlie i fabryka czekolady', 5);
+  SELECT add_new_borrow(45, 'Nędznicy', 7);
+  SELECT add_new_borrow(67, 'W pustyni i w puszczy', 1);
+  SELECT add_new_borrow(122, 'Krzyżacy', 2);
+  SELECT add_new_borrow(18, 'Potop', 5);
+  SELECT add_new_borrow(90, 'Ogniem i mieczem', 7);
+  SELECT add_new_borrow(56, 'Pan Wołodyjowski', 2);
+  SELECT add_new_borrow(15, 'Pan Tadeusz, czyli ostatni zajazd na Litwie', 1);
+  SELECT add_new_borrow(78, 'Ten obcy', 2);
+  SELECT add_new_borrow(111, 'Krew elfów', 1);
+  SELECT add_new_borrow(25, 'Wieża jaskółki', 4);
+  SELECT add_new_borrow(78, 'Ostatnie życzenie', 5);
+  SELECT add_new_borrow(17, 'Pani jeziora', 7);
+  SELECT add_new_borrow(98, 'Miecz przeznaczenia', 1);
+  SELECT add_new_borrow(56, 'Czas pogardy', 2);
+  SELECT add_new_borrow(57, 'Atlas chmur', 7);
+  SELECT add_new_borrow(23, 'Kolor purpury', 2);
+  SELECT add_new_borrow(11, 'Okruchy dnia', 1);
+  SELECT add_new_borrow(99, 'Pani Bovary', 2);
+
+
+
+
+  
+
+
 
 
 
