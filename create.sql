@@ -244,12 +244,25 @@ COMMIT;
 
 
 BEGIN;
+  CREATE OR REPLACE VIEW books_rating AS
+    SELECT book_id,
+           title,
+           ROUND(avg(rating),2) AS rate
+    FROM books
+    LEFT JOIN ratings USING (book_id)
+    GROUP BY book_id
+    ORDER BY title;
+
+
+
+
   CREATE OR REPLACE VIEW titles_info AS
-    SELECT title AS title,
+    SELECT books.title AS title,
            string_agg(DISTINCT author_name, ','||E'\n') AS authors,
            string_agg(DISTINCT category_name, ','||E'\n') AS categories,
            string_agg(DISTINCT publisher_name, ','||E'\n') AS publishers,
            string_agg(DISTINCT branch_name, ','||E'\n') AS branches,
+           rate,
            COUNT(DISTINCT specimen_id) AS amount,
            COUNT(DISTINCT specimen_id) - COUNT(NULLIF(borrow_date IS NULL OR return_date IS NOT NULL, TRUE)) AS available 
     FROM books
@@ -262,7 +275,8 @@ BEGIN;
     LEFT JOIN specimens USING (edition_id)
     LEFT JOIN branches USING (branch_id)
     LEFT JOIN borrows USING (specimen_id)
-    GROUP BY book_id
+    LEFT JOIN books_rating USING (book_id)
+    GROUP BY book_id, rate
     ORDER BY title;
 
   CREATE OR REPLACE VIEW authors_info AS
@@ -758,8 +772,8 @@ BEGIN;
     $$
     LANGUAGE plpgsql;
 
-    CREATE OR REPLACE FUNCTION add_new_rating (tit VARCHAR(100),
-                                              cli INTEGER,
+    CREATE OR REPLACE FUNCTION add_new_rating (cli INTEGER,
+                                              tit VARCHAR(100),
                                               rat INTEGER) RETURNS VOID AS $$
     DECLARE
       b_id INTEGER;
@@ -770,7 +784,7 @@ BEGIN;
         RAISE EXCEPTION 'Book does not exists';
       END IF;
 
-      INSERT INTO rating(client_id, book_id, rating)
+      INSERT INTO ratings(client_id, book_id, rating)
       VALUES (cli, b_id, rat);
     END
     $$
@@ -782,6 +796,8 @@ BEGIN;
     CREATE OR REPLACE FUNCTION add_new_borrow (cli INTEGER,
                                               tit VARCHAR(100),
                                               bra INTEGER,
+                                              bor TIMESTAMP WITH TIME ZONE DEFAULT now(),
+                                              ret TIMESTAMP WITH TIME ZONE DEFAULT NULL,
                                               isb VARCHAR(30) DEFAULT NULL,
                                               aut VARCHAR(100) DEFAULT NULL,
                                               edi VARCHAR(100) DEFAULT NULL,
@@ -811,8 +827,8 @@ BEGIN;
         RAISE EXCEPTION 'There is no book like this or everything is borrowed';
       END IF;
 
-      INSERT INTO borrows(client_id, specimen_id)
-      VALUES (cli, s_id);
+      INSERT INTO borrows(client_id, specimen_id, borrow_date, return_date)
+      VALUES (cli, s_id, bor, ret);
 
     END
     $$
