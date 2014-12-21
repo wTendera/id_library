@@ -13,7 +13,7 @@ $psql
 
 And here you are
 
-
+You can find database schema in diagram.jpg
 
 Clear file contains script to delete database.
 Create file containts whole schema with triggers, functions and view

@@ -319,7 +319,7 @@ BEGIN;
   CREATE OR REPLACE VIEW terminating_borrows AS
     SELECT *
     FROM current_borrows
-    WHERE deadline BETWEEN now() AND now()  
+    WHERE deadline BETWEEN now() AND now()  + interval '1 week'
     ORDER BY deadline;
 
   CREATE OR REPLACE VIEW terminated_borrows AS
@@ -330,7 +330,7 @@ BEGIN;
 
   CREATE OR REPLACE VIEW clients_penalties AS
     SELECT client,
-           SUM(EXTRACT(DAY FROM (now()-deadline))*2) || ' $' AS penalty
+           SUM(EXTRACT(DAY FROM (now()-deadline))*2) || '$' AS penalty
     FROM terminated_borrows
     GROUP BY client
     ORDER BY client;
