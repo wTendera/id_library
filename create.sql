@@ -301,10 +301,11 @@ BEGIN;
     ORDER BY author_name;
 
   CREATE OR REPLACE VIEW current_borrows AS
-    SELECT client_name,
-           title,
-           borrow_date,
-           return_final_date
+    SELECT client_name AS client,
+           title AS title,
+           specimen_id AS specimen,
+           borrow_date AS borrowed,
+           return_final_date AS deadline
     FROM clients
     INNER JOIN borrows USING (client_id)
     INNER JOIN specimens USING (specimen_id)
@@ -314,30 +315,25 @@ BEGIN;
     ORDER BY return_final_date;
 
   CREATE OR REPLACE VIEW terminating_borrows AS
-    SELECT client_name,
-           title,
-           borrow_date,
-           return_final_date
-    FROM clients
-    INNER JOIN borrows USING (client_id)
-    INNER JOIN specimens USING (specimen_id)
-    INNER JOIN editions USING (edition_id)
-    INNER JOIN books USING (book_id)
-    WHERE return_date IS NULL and return_final_date < now() + interval '1 week' and return_final_date > now()  
-    ORDER BY return_final_date;
+    SELECT *
+    FROM current_borrows
+    WHERE deadline BETWEEN now() AND now()  
+    ORDER BY deadline;
 
   CREATE OR REPLACE VIEW terminated_borrows AS
-    SELECT client_name,
-           title,
-           borrow_date,
-           return_final_date
-    FROM clients
-    INNER JOIN borrows USING (client_id)
-    INNER JOIN specimens USING (specimen_id)
-    INNER JOIN editions USING (edition_id)
-    INNER JOIN books USING (book_id)
-    WHERE return_date IS NULL and return_final_date < now()  
-    ORDER BY return_final_date;
+    SELECT *
+    FROM current_borrows
+    WHERE deadline < now()  
+    ORDER BY deadline;
+
+  CREATE OR REPLACE VIEW clients_penalties AS
+    SELECT client,
+           SUM(EXTRACT(DAY FROM (now()-deadline))*2) || ' $' AS penalty
+    FROM terminated_borrows
+    GROUP BY client
+    ORDER BY client;
+
+
 
 COMMIT;
 
