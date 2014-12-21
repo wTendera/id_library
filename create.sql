@@ -323,7 +323,7 @@ BEGIN;
     INNER JOIN specimens USING (specimen_id)
     INNER JOIN editions USING (edition_id)
     INNER JOIN books USING (book_id)
-    WHERE return_date IS NULL and return_final_date < now() - interval '1 week'  
+    WHERE return_date IS NULL and return_final_date < now() + interval '1 week' and return_final_date > now()  
     ORDER BY return_final_date;
 
   CREATE OR REPLACE VIEW terminated_borrows AS
