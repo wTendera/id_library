@@ -300,6 +300,8 @@ BEGIN;
     GROUP BY author_id
     ORDER BY author_name;
 
+
+
   CREATE OR REPLACE VIEW current_borrows AS
     SELECT client_name AS client,
            title AS title,
