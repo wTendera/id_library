@@ -179,7 +179,7 @@ BEGIN;
     specimen_id        integer    NOT NULL,
     borrow_date        timestamp  NOT NULL  DEFAULT now(),
     return_date        timestamp,
-    return_final_date  timestamp  NOT NULL  DEFAULT now() + interval '1 month',
+    return_final_date  timestamp  NOT NULL,
     
     CONSTRAINT pk_borrows
       PRIMARY KEY (borrow_id),
@@ -596,6 +596,9 @@ BEGIN;
   CREATE OR REPLACE FUNCTION borrow_check() RETURNS trigger AS $borrow_check$
     DECLARE
     BEGIN
+      IF NEW.return_final_date IS NULL THEN
+        NEW.return_final_date = NEW.borrow_date + interval '1 month';
+      END IF;
       IF EXISTS (SELECT * FROM borrows WHERE specimen_id = NEW.specimen_id AND return_date IS NULL) THEN
         RAISE EXCEPTION 'Book is borrowed by somoene else';
       END IF;
