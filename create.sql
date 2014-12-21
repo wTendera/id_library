@@ -300,6 +300,44 @@ BEGIN;
     GROUP BY author_id
     ORDER BY author_name;
 
+  CREATE OR REPLACE VIEW current_borrows AS
+    SELECT client_name,
+           title,
+           borrow_date,
+           return_final_date
+    FROM clients
+    INNER JOIN borrows USING (client_id)
+    INNER JOIN specimens USING (specimen_id)
+    INNER JOIN editions USING (edition_id)
+    INNER JOIN books USING (book_id)
+    WHERE return_date IS NULL
+    ORDER BY return_final_date;
+
+  CREATE OR REPLACE VIEW terminating_borrows AS
+    SELECT client_name,
+           title,
+           borrow_date,
+           return_final_date
+    FROM clients
+    INNER JOIN borrows USING (client_id)
+    INNER JOIN specimens USING (specimen_id)
+    INNER JOIN editions USING (edition_id)
+    INNER JOIN books USING (book_id)
+    WHERE return_date IS NULL and return_final_date < now() - interval '1 week'  
+    ORDER BY return_final_date;
+
+  CREATE OR REPLACE VIEW terminated_borrows AS
+    SELECT client_name,
+           title,
+           borrow_date,
+           return_final_date
+    FROM clients
+    INNER JOIN borrows USING (client_id)
+    INNER JOIN specimens USING (specimen_id)
+    INNER JOIN editions USING (edition_id)
+    INNER JOIN books USING (book_id)
+    WHERE return_date IS NULL and return_final_date < now()  
+    ORDER BY return_final_date;
 
 COMMIT;
 
