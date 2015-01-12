@@ -562,15 +562,25 @@ BEGIN;
     DECLARE
       c char;
       i integer;
+      n integer;
     BEGIN
+      n=0;
       IF NEW.phone_num IS NOT NULL THEN
         FOR i IN 1 .. char_length(NEW.phone_num)
         LOOP
           c = SUBSTRING(NEW.phone_num FROM i FOR 1);
+          IF c BETWEEN '0' AND '9' THEN
+            n=n+1;
+          END IF;
           IF c NOT BETWEEN '0' AND '9' AND c!='+' AND c!='-' AND c!=' ' THEN
             RAISE EXCEPTION 'Incorrect phone number';
           END IF;
         END LOOP;
+
+        IF n<3 THEN
+          RAISE EXCEPTION 'Incorrect phone number';
+        END IF;
+
       END IF;
 
       RETURN NEW;
@@ -612,6 +622,39 @@ BEGIN;
 
   CREATE TRIGGER borrow_check BEFORE INSERT OR UPDATE ON borrows
   FOR EACH ROW EXECUTE PROCEDURE borrow_check();
+
+
+  CREATE OR REPLACE FUNCTION category_cycle_check() RETURNS trigger AS $category_cycle_check$
+  DECLARE
+    i INTEGER;
+  BEGIN
+    IF NEW.above_category IS NULL THEN
+      RETURN NEW;
+    END IF;
+
+    i=NEW.above_category;
+
+    WHILE i IS NOT NULL
+    LOOP
+      IF i = NEW.category_id THEN
+        RAISE EXCEPTION 'There is cycle!';
+      END IF;
+
+      i := (SELECT above_category
+           FROM categories
+           WHERE category_id = i
+           LIMIT 1)::integer;
+    END LOOP;
+
+    RETURN NEW;
+  
+  END
+  $category_cycle_check$
+  LANGUAGE plpgsql;
+
+  CREATE TRIGGER category_cycle_check BEFORE INSERT OR UPDATE ON categories
+  FOR EACH ROW EXECUTE PROCEDURE category_cycle_check();
+
 COMMIT;
 
 

@@ -17,7 +17,7 @@ And here you are
 You can find database schema in diagram.jpg
 
 Clear file contains script to delete database.
-Create file containts whole database with triggers, functions and view
+Create file containts whole schema with triggers, functions and view
 Fill file contains sample data
 
 There are few views that can be used:
