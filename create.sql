@@ -1,8 +1,8 @@
 DROP DATABASE IF EXISTS library;
 CREATE DATABASE library;
+\connect library
 
 BEGIN;
-  \connect library
 
   CREATE TABLE authors
   (
@@ -46,7 +46,7 @@ BEGIN;
       PRIMARY KEY (publisher_id),
 
     CONSTRAINT ck_publishers
-      CHECK (creation_date IS NULL OR creation_date<=current_date)
+      CHECK (creation_date<=current_date)
 
   );
 
@@ -79,7 +79,7 @@ BEGIN;
   CREATE TABLE editions
   (
     edition_id     serial        NOT NULL,
-    isbn           varchar(30)   NOT NULL UNIQUE,
+    isbn           varchar(30)             UNIQUE,
     edition_name   varchar(100),
     release_date   date,
     book_id        integer       NOT NULL,
@@ -100,7 +100,7 @@ BEGIN;
         REFERENCES publishers,
 
     CONSTRAINT ck_editions
-      CHECK (release_date IS NULL OR release_date<=current_date)
+      CHECK (release_date<=current_date)
   );
 
 
@@ -109,7 +109,7 @@ BEGIN;
     specimen_id  serial       NOT NULL,
     edition_id   integer      NOT NULL,
     branch_id    integer      NOT NULL,
-    cover_type   char(4),
+    hard_cover   boolean,
     
     CONSTRAINT pk_specimens
       PRIMARY KEY (specimen_id),
@@ -120,10 +120,7 @@ BEGIN;
 
     CONSTRAINT fk_specimens_branches
       FOREIGN KEY (branch_id)
-        REFERENCES branches,
-
-    CONSTRAINT ck_specimens
-      CHECK (cover_type = 'hard' OR cover_type = 'soft')
+        REFERENCES branches
   );
 
 
@@ -142,16 +139,16 @@ BEGIN;
       PRIMARY KEY (client_id),
 
     CONSTRAINT ck_clients
-      CHECK (signin_date IS NULL OR signin_date<=now())
+      CHECK (signin_date<=now())
   );
 
 
   CREATE TABLE ratings
   (
-    client_id    integer    NOT NULL,
-    book_id      integer    NOT NULL,
-    rating       integer    NOT NULL,
-    rating_date  timestamp  NOT NULL  DEFAULT now(),
+    client_id    integer      NOT NULL,
+    book_id      integer      NOT NULL,
+    rating       numeric(2,0) NOT NULL,
+    rating_date  timestamp    NOT NULL  DEFAULT now(),
 
     CONSTRAINT pk_ratings
       PRIMARY KEY (client_id, book_id),
@@ -168,7 +165,7 @@ BEGIN;
       CHECK (rating BETWEEN 1 AND 10),
 
     CONSTRAINT ck_ratings_1
-      CHECK (rating_date IS NULL OR rating_date<=now())
+      CHECK (rating_date<=now())
   );
 
 
@@ -196,7 +193,7 @@ BEGIN;
       CHECK (borrow_date < return_final_date AND borrow_date<=now()),
 
     CONSTRAINT ck_borrows_1
-      CHECK (return_date IS NULL OR (return_date<=now() AND borrow_date < return_date))
+      CHECK ((return_date<=now() AND borrow_date < return_date))
   );
   
 
@@ -252,9 +249,6 @@ BEGIN;
     LEFT JOIN ratings USING (book_id)
     GROUP BY book_id
     ORDER BY title;
-
-
-
 
   CREATE OR REPLACE VIEW titles_info AS
     SELECT books.title AS title,
@@ -330,7 +324,7 @@ BEGIN;
 
   CREATE OR REPLACE VIEW clients_penalties AS
     SELECT client,
-           SUM(EXTRACT(DAY FROM (now()-deadline))*2) || '$' AS penalty
+           SUM(EXTRACT(DAY FROM (now()-deadline))*2) AS penalty
     FROM terminated_borrows
     GROUP BY client
     ORDER BY client;
@@ -460,6 +454,9 @@ BEGIN;
       corisbn VARCHAR(15);
     
     BEGIN
+      IF NEW.isbn IS NULL THEN
+        RETURN NEW;
+      END IF;
     
       sum=0;
       corisbn = '';
@@ -841,13 +838,26 @@ BEGIN;
     DECLARE
       e_id INTEGER;
       b_id INTEGER;
+      c BOOLEAN;
     BEGIN
       e_id = add_new_edition(tit, isb, edi, auth, cat, pub, rel);
 
+      IF cov != 'soft' AND cov != 'hard' THEN
+      	c = NULL;
+      END IF;
+
+      IF cov = 'soft' THEN
+        c = FALSE;
+      END IF;
+
+      IF cov = 'hard' THEN
+        c = TRUE;
+      END IF;
+
       FOR i IN 1 .. amo
       LOOP
-        INSERT INTO specimens(edition_id, branch_id, cover_type)
-        VALUES (e_id, br_id, cov);
+        INSERT INTO specimens(edition_id, branch_id, hard_cover)
+        VALUES (e_id, br_id, c);
       END LOOP;
 
     END
