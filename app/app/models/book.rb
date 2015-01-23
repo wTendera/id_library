@@ -11,4 +11,13 @@ class Book < ActiveRecord::Base
 
   has_many :editions
   has_many :book_copies, through: :editions
+
+  def rate
+    sum = ratings.map(&:rating).sum;
+    divide = ratings.count
+    if divide == 0
+      divide = 1
+    end
+    sum/divide
+  end
 end
