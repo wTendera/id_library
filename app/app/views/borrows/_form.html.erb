@@ -1,0 +1,37 @@
+<%= form_for(@borrow) do |f| %>
+  <% if @borrow.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@borrow.errors.count, "error") %> prohibited this borrow from being saved:</h2>
+
+      <ul>
+      <% @borrow.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :client_id %><br>
+    <%= f.number_field :client_id %>
+  </div>
+  <div class="field">
+    <%= f.label :specimen_id %><br>
+    <%= f.number_field :specimen_id %>
+  </div>
+  <div class="field">
+    <%= f.label :borrow_date %><br>
+    <%= f.date_select :borrow_date %>
+  </div>
+  <div class="field">
+    <%= f.label :return_date %><br>
+    <%= f.date_select :return_date %>
+  </div>
+  <div class="field">
+    <%= f.label :return_final_date %><br>
+    <%= f.date_select :return_final_date %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

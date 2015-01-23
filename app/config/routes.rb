@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :borrows
+
   resources :branches
 
   resources :book_copies
