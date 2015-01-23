@@ -10,4 +10,5 @@ class Book < ActiveRecord::Base
   has_many :ratings
 
   has_many :editions
+  has_many :book_copies, through: :editions
 end

@@ -3,6 +3,8 @@
 <table>
   <thead>
     <tr>
+      <th>Book Title</th>
+      <th>Edition Name</th>
       <th>Edition</th>
       <th>Branch</th>
       <th>Cover type</th>
@@ -13,6 +15,8 @@
   <tbody>
     <% @book_copies.each do |book_copy| %>
       <tr>
+        <td><%= book_copy.edition.edition_name %></td>
+        <td><%= book_copy.book.title %></td>
         <td><%= book_copy.edition_id %></td>
         <td><%= book_copy.branch_id %></td>
         <td><%= book_copy.cover_type %></td>
