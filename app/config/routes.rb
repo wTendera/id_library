@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :book_copies
+
   resources :publishers
 
   resources :editions

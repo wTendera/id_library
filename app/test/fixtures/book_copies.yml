@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  edition_id: 1
+  branch_id: 1
+  cover_type: false
+
+two:
+  edition_id: 1
+  branch_id: 1
+  cover_type: false
