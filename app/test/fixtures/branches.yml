@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  branch_name: MyString
+  address: MyString
+  phone_num: MyString
+
+two:
+  branch_name: MyString
+  address: MyString
+  phone_num: MyString
