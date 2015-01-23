@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :publishers
+
   resources :editions
 
   resources :categories
