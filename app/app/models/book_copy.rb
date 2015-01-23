@@ -3,4 +3,5 @@ class BookCopy < ActiveRecord::Base
   self.table_name = "specimens"
   belongs_to :edition
   delegate :book, :to => :edition, :allow_nil => true
+  has_many :borrows
 end

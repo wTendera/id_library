@@ -1,6 +1,21 @@
 <p id="notice"><%= notice %></p>
 
 <p>
+  <strong>Book Title:</strong>
+  <%= @borrow.book_copy.try(:book).try(:title) %>
+</p>
+
+<p>
+  <strong>Edition name:</strong>
+  <%= @borrow.book_copy.edition.edition_name %>
+</p>
+
+<p>
+  <strong>Client Name:</strong>
+  <%= @borrow.client.client_name %>
+</p>
+
+<p>
   <strong>Client:</strong>
   <%= @borrow.client_id %>
 </p>

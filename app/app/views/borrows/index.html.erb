@@ -3,6 +3,9 @@
 <table>
   <thead>
     <tr>
+      <th>Client name</th>
+      <th>Book title</th>
+      <th>Edition name</th>
       <th>Client</th>
       <th>Specimen</th>
       <th>Borrow date</th>
@@ -15,6 +18,9 @@
   <tbody>
     <% @borrows.each do |borrow| %>
       <tr>
+        <td><%= borrow.client.client_name %></td>
+        <td><%= borrow.book_copy.try(:book).try(:title) %></td>
+        <td><%= borrow.book_copy.edition.edition_name %></td>
         <td><%= borrow.client_id %></td>
         <td><%= borrow.specimen_id %></td>
         <td><%= borrow.borrow_date %></td>
