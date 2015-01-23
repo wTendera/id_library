@@ -1,0 +1,33 @@
+<%= form_for(@publisher) do |f| %>
+  <% if @publisher.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@publisher.errors.count, "error") %> prohibited this publisher from being saved:</h2>
+
+      <ul>
+      <% @publisher.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :publisher_name %><br>
+    <%= f.text_field :publisher_name %>
+  </div>
+  <div class="field">
+    <%= f.label :creation_date %><br>
+    <%= f.date_select :creation_date %>
+  </div>
+  <div class="field">
+    <%= f.label :address %><br>
+    <%= f.text_field :address %>
+  </div>
+  <div class="field">
+    <%= f.label :phone_num %><br>
+    <%= f.text_field :phone_num %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

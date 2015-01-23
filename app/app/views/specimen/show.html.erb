@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Edition:</strong>
+  <%= @specimen.edition_id %>
+</p>
+
+<p>
+  <strong>Branch:</strong>
+  <%= @specimen.branch_id %>
+</p>
+
+<p>
+  <strong>Cover type:</strong>
+  <%= @specimen.cover_type %>
+</p>
+
+<%= link_to 'Edit', edit_specimen_path(@specimen) %> |
+<%= link_to 'Back', specimen_path %>

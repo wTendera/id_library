@@ -1,0 +1,29 @@
+<h1>Listing specimen</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Edition</th>
+      <th>Branch</th>
+      <th>Cover type</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @specimen.each do |specimen| %>
+      <tr>
+        <td><%= specimen.edition_id %></td>
+        <td><%= specimen.branch_id %></td>
+        <td><%= specimen.cover_type %></td>
+        <td><%= link_to 'Show', specimen %></td>
+        <td><%= link_to 'Edit', edit_specimen_path(specimen) %></td>
+        <td><%= link_to 'Destroy', specimen, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New specimen', new_specimen_path %>
