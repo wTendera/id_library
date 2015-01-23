@@ -8,4 +8,6 @@ class Book < ActiveRecord::Base
   has_many :authors, through: :author_books
 
   has_many :ratings
+
+  has_many :editions
 end

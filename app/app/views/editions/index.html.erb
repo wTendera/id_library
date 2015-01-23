@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>Book Title</th>
       <th>Isbn</th>
       <th>Edition name</th>
       <th>Release date</th>
@@ -15,6 +16,7 @@
   <tbody>
     <% @editions.each do |edition| %>
       <tr>
+        <td><%= edition.book.title %></td>
         <td><%= edition.isbn %></td>
         <td><%= edition.edition_name %></td>
         <td><%= edition.release_date %></td>
