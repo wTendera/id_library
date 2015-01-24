@@ -1,0 +1,35 @@
+<h1>Listing titles info</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Amount</th>
+      <th>Authors</th>
+      <th>Available</th>
+      <th>Branches</th>
+      <th>Categories</th>
+      <th>Publishers</th>
+      <th>Rate</th>
+      <th>Title</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @infos.each do |info| %>
+      <tr>
+        <td><%= info.amount %></td>
+        <td><%= info.authors %></td>
+        <td><%= info.available %></td>
+        <td><%= info.branches %></td>
+        <td><%= info.categories %></td>
+        <td><%= info.publishers %></td>
+        <td><%= info.rate %></td>
+        <td><%= info.title %></td>
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
