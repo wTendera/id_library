@@ -1,0 +1,23 @@
+<h1>Listing client penalties</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Penalty</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @infos.each do |info| %>
+      <tr>
+        <td><%= info.client %></td>
+        <td><%= info.penalty %></td>
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
