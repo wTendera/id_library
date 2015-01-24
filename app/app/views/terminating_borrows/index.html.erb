@@ -1,0 +1,29 @@
+<h1>Listing terminating borrows</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Borrowed</th>
+      <th>Client</th>
+      <th>Deadline</th>
+      <th>specimen</th>
+      <th>Title</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @infos.each do |info| %>
+      <tr>
+        <td><%= info.borrowed %></td>
+        <td><%= info.client %></td>
+        <td><%= info.deadline %></td>
+        <td><%= info.specimen %></td>
+        <td><%= info.title %></td>
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
