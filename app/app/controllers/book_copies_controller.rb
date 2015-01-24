@@ -4,7 +4,7 @@ class BookCopiesController < ApplicationController
   # GET /book_copies
   # GET /book_copies.json
   def index
-    @book_copies = BookCopy.all
+    @book_copies = BookCopy.includes(edition: [ :book])
   end
 
   # GET /book_copies/1

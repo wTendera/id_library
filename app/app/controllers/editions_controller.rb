@@ -4,7 +4,7 @@ class EditionsController < ApplicationController
   # GET /editions
   # GET /editions.json
   def index
-    @editions = Edition.all
+    @editions = Edition.includes(:book)
   end
 
   # GET /editions/1
