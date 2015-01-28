@@ -10,6 +10,10 @@
       </ul>
     </div>
   <% end %>
+  <%= label_tag(:quantity) %><br>
+  <%= number_field_tag(:quantity, params[:quantity]) %>
+
+
 
   <div class="field">
     <%= f.label :edition_id %><br>
@@ -20,8 +24,8 @@
     <%= f.number_field :branch_id %>
   </div>
   <div class="field">
-    <%= f.label :cover_type %><br>
-    <%= f.check_box :cover_type %>
+    <%= f.label :hard_cover %><br>
+    <%= f.check_box :hard_cover %>
   </div>
   <div class="actions">
     <%= f.submit %>

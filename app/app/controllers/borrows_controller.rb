@@ -4,7 +4,7 @@ class BorrowsController < ApplicationController
   # GET /borrows
   # GET /borrows.json
   def index
-    @borrows = Borrow.all
+    @borrows = Borrow.all.order(:id)
   end
 
   # GET /borrows/1

@@ -4,7 +4,8 @@ class BookCopiesController < ApplicationController
   # GET /book_copies
   # GET /book_copies.json
   def index
-    @book_copies = BookCopy.includes(edition: [ :book])
+    #@book_copies = BookCopy.includes(edition: [ :book]).order(:id)
+    @book_copies = BookCopy.includes(edition: [ :book]).order(:id)
   end
 
   # GET /book_copies/1
@@ -24,17 +25,11 @@ class BookCopiesController < ApplicationController
   # POST /book_copies
   # POST /book_copies.json
   def create
-    @book_copy = BookCopy.new(book_copy_params)
-
-    respond_to do |format|
-      if @book_copy.save
-        format.html { redirect_to @book_copy, notice: 'Book copy was successfully created.' }
-        format.json { render :show, status: :created, location: @book_copy }
-      else
-        format.html { render :new }
-        format.json { render json: @book_copy.errors, status: :unprocessable_entity }
-      end
+    quantity = params[:quantity].to_i
+    quantity.times do 
+      BookCopy.create(book_copy_params)
     end
+    redirect_to book_copies_path, notice: 'Book copies were successfully added.'
   end
 
   # PATCH/PUT /book_copies/1
@@ -69,6 +64,6 @@ class BookCopiesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def book_copy_params
-      params.require(:book_copy).permit(:edition_id, :branch_id, :cover_type)
+      params.require(:book_copy).permit(:edition_id, :branch_id, :hard_cover)
     end
 end

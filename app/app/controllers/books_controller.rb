@@ -4,7 +4,7 @@ class BooksController < ApplicationController
   # GET /books
   # GET /books.json
   def index
-    @books = Book.includes(:ratings)
+    @books = Book.includes(:ratings).order(:id)
   end
 
   # GET /books/1
